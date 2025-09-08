@@ -1,0 +1,155 @@
+Microsoft Windows [Version 10.0.19045.6216]
+(c) Microsoft Corporation. All rights reserved.
+
+C:\Users\eilance>psql -U postgres -h localhost -p 5432 -d postgres
+Password for user postgres:
+psql (17.6)
+WARNING: Console code page (437) differs from Windows code page (1252)
+         8-bit characters might not work correctly. See psql reference
+         page "Notes for Windows users" for details.
+Type "help" for help.
+
+postgres=# CREATE TABLE students (
+postgres(#     student_id SERIAL PRIMARY KEY,
+postgres(#     first_name VARCHAR(50) NOT NULL,
+postgres(#     last_name VARCHAR(50) NOT NULL,
+postgres(#     email VARCHAR(100) UNIQUE NOT NULL,
+postgres(#     faculty VARCHAR(100)
+postgres(# );
+ERROR:  character with byte sequence 0xd0 0x9e in encoding "UTF8" has no equivalent in encoding "WIN1252"
+postgres=# DROP TABLE
+postgres-# CREATE TABLE students (
+postgres(#     student_id SERIAL PRIMARY KEY,
+postgres(#     first_name VARCHAR(50) NOT NULL,
+postgres(#     last_name VARCHAR(50) NOT NULL,
+postgres(#     email VARCHAR(100) UNIQUE NOT NULL,
+postgres(#     faculty VARCHAR(100)
+postgres(# );
+ERROR:  character with byte sequence 0xd0 0x9e in encoding "UTF8" has no equivalent in encoding "WIN1252"
+postgres=# DROP TABLE students;
+DROP TABLE
+postgres=# CREATE TABLE students (
+postgres(#     student_id SERIAL PRIMARY KEY,
+postgres(#     first_name VARCHAR(50) NOT NULL,
+postgres(#     last_name VARCHAR(50) NOT NULL,
+postgres(#     email VARCHAR(100) UNIQUE NOT NULL,
+postgres(#     faculty VARCHAR(100)
+postgres(# );
+CREATE TABLE
+postgres=# \d students
+                                          Table "public.students"
+   Column   |          Type          | Collation | Nullable |                   Default
+------------+------------------------+-----------+----------+----------------------------------------------
+ student_id | integer                |           | not null | nextval('students_student_id_seq'::regclass)
+ first_name | character varying(50)  |           | not null |
+ last_name  | character varying(50)  |           | not null |
+ email      | character varying(100) |           | not null |
+ faculty    | character varying(100) |           |          |
+Indexes:
+    "students_pkey" PRIMARY KEY, btree (student_id)
+    "students_email_key" UNIQUE CONSTRAINT, btree (email)
+
+
+postgres=# DROP TABLE test_table;
+ERROR:  character with byte sequence 0xd0 0x9e in encoding "UTF8" has no equivalent in encoding "WIN1252"
+postgres=# DROP TABLE IF EXISTS test_table;
+ERROR:  character with byte sequence 0xd0 0x97 in encoding "UTF8" has no equivalent in encoding "WIN1252"
+postgres=# ALTER TABLE students
+postgres-# ADD COLUMN date_of_birth DATE;
+ALTER TABLE
+postgres=# ALTER TABLE students
+postgres-# DROP COLUMN faculty
+postgres-# ALTER TABLE students
+postgres-# DROP COLUMN faculty;
+ERROR:  character with byte sequence 0xd0 0x9e in encoding "UTF8" has no equivalent in encoding "WIN1252"
+postgres=# \d students
+                                           Table "public.students"
+    Column     |          Type          | Collation | Nullable |                   Default
+---------------+------------------------+-----------+----------+----------------------------------------------
+ student_id    | integer                |           | not null | nextval('students_student_id_seq'::regclass)
+ first_name    | character varying(50)  |           | not null |
+ last_name     | character varying(50)  |           | not null |
+ email         | character varying(100) |           | not null |
+ faculty       | character varying(100) |           |          |
+ date_of_birth | date                   |           |          |
+Indexes:
+    "students_pkey" PRIMARY KEY, btree (student_id)
+    "students_email_key" UNIQUE CONSTRAINT, btree (email)
+
+
+postgres=# ALTER TABLE students
+postgres-# DROP COLUMN faculty;
+ALTER TABLE
+postgres=# \d students
+                                           Table "public.students"
+    Column     |          Type          | Collation | Nullable |                   Default
+---------------+------------------------+-----------+----------+----------------------------------------------
+ student_id    | integer                |           | not null | nextval('students_student_id_seq'::regclass)
+ first_name    | character varying(50)  |           | not null |
+ last_name     | character varying(50)  |           | not null |
+ email         | character varying(100) |           | not null |
+ date_of_birth | date                   |           |          |
+Indexes:
+    "students_pkey" PRIMARY KEY, btree (student_id)
+    "students_email_key" UNIQUE CONSTRAINT, btree (email)
+
+
+postgres=# ALTER TABLE students
+postgres-# ALTER COLUMN first_name TYPE TEXT;
+ALTER TABLE
+postgres=# \d students
+                                           Table "public.students"
+    Column     |          Type          | Collation | Nullable |                   Default
+---------------+------------------------+-----------+----------+----------------------------------------------
+ student_id    | integer                |           | not null | nextval('students_student_id_seq'::regclass)
+ first_name    | text                   |           | not null |
+ last_name     | character varying(50)  |           | not null |
+ email         | character varying(100) |           | not null |
+ date_of_birth | date                   |           |          |
+Indexes:
+    "students_pkey" PRIMARY KEY, btree (student_id)
+    "students_email_key" UNIQUE CONSTRAINT, btree (email)
+
+
+postgres=# ALTER TABLE students
+postgres-# ADD CONSTRAINT unique_student_email UNIQUE (email);
+ALTER TABLE
+postgres=# \d students
+                                           Table "public.students"
+    Column     |          Type          | Collation | Nullable |                   Default
+---------------+------------------------+-----------+----------+----------------------------------------------
+ student_id    | integer                |           | not null | nextval('students_student_id_seq'::regclass)
+ first_name    | text                   |           | not null |
+ last_name     | character varying(50)  |           | not null |
+ email         | character varying(100) |           | not null |
+ date_of_birth | date                   |           |          |
+Indexes:
+    "students_pkey" PRIMARY KEY, btree (student_id)
+    "students_email_key" UNIQUE CONSTRAINT, btree (email)
+    "unique_student_email" UNIQUE CONSTRAINT, btree (email)
+
+
+postgres=# ALTER TABLE students
+postgres-# RENAME COLUMN email TO email_address;
+ALTER TABLE
+postgres=# ALTER TABLE students
+postgres-# RENAME TO university_students;
+ALTER TABLE
+postgres=# \d students
+Did not find any relation named "students".
+postgres=# \d university_students
+                                      Table "public.university_students"
+    Column     |          Type          | Collation | Nullable |                   Default
+---------------+------------------------+-----------+----------+----------------------------------------------
+ student_id    | integer                |           | not null | nextval('students_student_id_seq'::regclass)
+ first_name    | text                   |           | not null |
+ last_name     | character varying(50)  |           | not null |
+ email_address | character varying(100) |           | not null |
+ date_of_birth | date                   |           |          |
+Indexes:
+    "students_pkey" PRIMARY KEY, btree (student_id)
+    "students_email_key" UNIQUE CONSTRAINT, btree (email_address)
+    "unique_student_email" UNIQUE CONSTRAINT, btree (email_address)
+
+
+postgres=#
