@@ -1,0 +1,47 @@
+Microsoft Windows [Version 10.0.19045.6216]
+(c) Microsoft Corporation. All rights reserved.
+
+C:\Users\eilance>psql -U postgres -h localhost -p 5432 -d postgres
+Password for user postgres:
+psql (17.6)
+WARNING: Console code page (437) differs from Windows code page (1252)
+         8-bit characters might not work correctly. See psql reference
+         page "Notes for Windows users" for details.
+Type "help" for help.
+
+postgres=# CREATE DATABASE university;
+CREATE DATABASE
+postgres=# \l
+                                                                  List of databases
+    Name    |  Owner   | Encoding | Locale Provider |         Collate         |          Ctype          | Locale | ICU Rules |   Access privileges
+------------+----------+----------+-----------------+-------------------------+-------------------------+--------+-----------+-----------------------
+ l          | postgres | UTF8     | libc            | Russian_Kyrgyzstan.1252 | Russian_Kyrgyzstan.1252 |        |           |
+ postgres   | postgres | UTF8     | libc            | Russian_Kyrgyzstan.1252 | Russian_Kyrgyzstan.1252 |        |           |
+ template0  | postgres | UTF8     | libc            | Russian_Kyrgyzstan.1252 | Russian_Kyrgyzstan.1252 |        |           | =c/postgres          +
+            |          |          |                 |                         |                         |        |           | postgres=CTc/postgres
+ template1  | postgres | UTF8     | libc            | Russian_Kyrgyzstan.1252 | Russian_Kyrgyzstan.1252 |        |           | =c/postgres          +
+            |          |          |                 |                         |                         |        |           | postgres=CTc/postgres
+ university | postgres | UTF8     | libc            | Russian_Kyrgyzstan.1252 | Russian_Kyrgyzstan.1252 |        |           |
+(5 rows)
+
+
+postgres=# \c university
+You are now connected to database "university" as user "postgres".
+university=# \c postgres
+You are now connected to database "postgres" as user "postgres".
+postgres=# DROP DATABASE university;
+DROP DATABASE
+postgres=# \l
+                                                                 List of databases
+   Name    |  Owner   | Encoding | Locale Provider |         Collate         |          Ctype          | Locale | ICU Rules |   Access privileges
+-----------+----------+----------+-----------------+-------------------------+-------------------------+--------+-----------+-----------------------
+ l         | postgres | UTF8     | libc            | Russian_Kyrgyzstan.1252 | Russian_Kyrgyzstan.1252 |        |           |
+ postgres  | postgres | UTF8     | libc            | Russian_Kyrgyzstan.1252 | Russian_Kyrgyzstan.1252 |        |           |
+ template0 | postgres | UTF8     | libc            | Russian_Kyrgyzstan.1252 | Russian_Kyrgyzstan.1252 |        |           | =c/postgres          +
+           |          |          |                 |                         |                         |        |           | postgres=CTc/postgres
+ template1 | postgres | UTF8     | libc            | Russian_Kyrgyzstan.1252 | Russian_Kyrgyzstan.1252 |        |           | =c/postgres          +
+           |          |          |                 |                         |                         |        |           | postgres=CTc/postgres
+(4 rows)
+
+
+postgres=#
