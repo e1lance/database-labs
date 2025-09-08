@@ -1,0 +1,246 @@
+Microsoft Windows [Version 10.0.19045.6216]
+(c) Microsoft Corporation. All rights reserved.
+
+C:\Users\eilance>psql -U postgres -h localhost -p 5432 -d postgres
+Password for user postgres:
+psql (17.6)
+WARNING: Console code page (437) differs from Windows code page (1252)
+         8-bit characters might not work correctly. See psql reference
+         page "Notes for Windows users" for details.
+Type "help" for help.
+
+postgres=# DROP TABLE university_students;
+DROP TABLE
+postgres=# CREATE TABLE students (
+postgres(#     student_id INTEGER PRIMARY KEY,
+postgres(#     name VARCHAR(100),
+postgres(#     email VARCHAR(150)
+postgres(# );
+CREATE TABLE
+postgres=#
+postgres=# DROP TABLE students;
+DROP TABLE
+postgres=# CREATE TABLE students (
+postgres(#     student_id INTEGER,
+postgres(#     name VARCHAR(100),
+postgres(#     email VARCHAR(150),
+postgres(#     PRIMARY KEY (student_id)
+postgres(# );
+CREATE TABLE
+postgres=# DROP TABLE students;
+DROP TABLE
+postgres=# CREATE TABLE students (
+postgres(#     student_id INTEGER,
+postgres(#     name VARCHAR(100),
+postgres(#     email VARCHAR(150),
+postgres(#     CONSTRAINT pk_students PRIMARY KEY (student_id)
+postgres(# );
+CREATE TABLE
+postgres=# DROP TABLE students;
+DROP TABLE
+postgres=# CREATE TABLE students (
+postgres(#     student_id INTEGER,
+postgres(#     name VARCHAR(100),
+postgres(#     email VARCHAR(150),
+postgres(#     CONSTRAINT pk_students PRIMARY KEY (student_id)
+postgres(# );
+CREATE TABLE
+postgres=# DROP TABLE students;
+DROP TABLE
+postgres=# CREATE TABLE students (
+postgres(#     student_id SERIAL PRIMARY KEY,
+postgres(#     name VARCHAR(100) NOT NULL,
+postgres(#     email VARCHAR(150) UNIQUE,
+postgres(#     faculty VARCHAR(50)
+postgres(# );
+CREATE TABLE
+postgres=# INSERT INTO students (name, email, faculty) VALUES
+postgres-# ('Alice Johnson', 'alice@alatoo.edu.kg', 'Computer Science'),
+postgres-# ('Bob Smith', 'bob@alatoo.edu.kg', 'Mathematics'),
+postgres-# ('Carol Davis', 'carol@alatoo.edu.kg', 'Computer Science');
+INSERT 0 3
+postgres=# \d students
+                                          Table "public.students"
+   Column   |          Type          | Collation | Nullable |                   Default
+------------+------------------------+-----------+----------+----------------------------------------------
+ student_id | integer                |           | not null | nextval('students_student_id_seq'::regclass)
+ name       | character varying(100) |           | not null |
+ email      | character varying(150) |           |          |
+ faculty    | character varying(50)  |           |          |
+Indexes:
+    "students_pkey" PRIMARY KEY, btree (student_id)
+    "students_email_key" UNIQUE CONSTRAINT, btree (email)
+
+
+postgres=# SELECT * FROM students;
+ student_id |     name      |        email        |     faculty
+------------+---------------+---------------------+------------------
+          1 | Alice Johnson | alice@alatoo.edu.kg | Computer Science
+          2 | Bob Smith     | bob@alatoo.edu.kg   | Mathematics
+          3 | Carol Davis   | carol@alatoo.edu.kg | Computer Science
+(3 rows)
+
+
+postgres=# DROP TABLE students;
+DROP TABLE
+postgres=# CREATE TABLE course_enrollments (
+postgres(#     student_id INTEGER,
+postgres(#     course_id INTEGER,
+postgres(#     semester VARCHAR(20),
+postgres(#     enrollment_date DATE DEFAULT CURRENT_DATE,
+postgres(#     grade CHAR(2),
+postgres(#     PRIMARY KEY (student_id, course_id, semester)
+postgres(# );
+CREATE TABLE
+postgres=# INSERT INTO course_enrollments (student_id, course_id, semester, grade) VALUES
+postgres-# (1, 101, '2024-Spring', 'A'),
+postgres-# (1, 102, '2024-Spring', 'B+'),
+postgres-# (2, 101, '2024-Spring', 'A-'),
+postgres-# (1, 101, '2024-Fall', 'A+');
+INSERT 0 4
+postgres=# SELECT * FROM course_enrollments;
+ student_id | course_id |  semester   | enrollment_date | grade
+------------+-----------+-------------+-----------------+-------
+          1 |       101 | 2024-Spring | 2025-09-08      | A
+          1 |       102 | 2024-Spring | 2025-09-08      | B+
+          2 |       101 | 2024-Spring | 2025-09-08      | A-
+          1 |       101 | 2024-Fall   | 2025-09-08      | A+
+(4 rows)
+
+
+postgres=# \d course_enrollments;
+                       Table "public.course_enrollments"
+     Column      |         Type          | Collation | Nullable |   Default
+-----------------+-----------------------+-----------+----------+--------------
+ student_id      | integer               |           | not null |
+ course_id       | integer               |           | not null |
+ semester        | character varying(20) |           | not null |
+ enrollment_date | date                  |           |          | CURRENT_DATE
+ grade           | character(2)          |           |          |
+Indexes:
+    "course_enrollments_pkey" PRIMARY KEY, btree (student_id, course_id, semester)
+
+
+postgres=# CREATE TABLE students (
+postgres(#     student_id SERIAL PRIMARY KEY,
+postgres(#     name VARCHAR(100) NOT NULL,
+postgres(#     email VARCHAR(150) UNIQUE,
+postgres(#     faculty VARCHAR(50)
+postgres(# );
+CREATE TABLE
+postgres=# INSERT INTO students (name, email, faculty) VALUES
+postgres-# ('Alice Johnson', 'alice@alatoo.edu.kg', 'Computer Science'),
+postgres-# ('Bob Smith', 'bob@alatoo.edu.kg', 'Mathematics'),
+postgres-# ('Carol Davis', 'carol@alatoo.edu.kg', 'Computer Science');
+INSERT 0 3
+postgres=# CREATE TABLE products (
+postgres(#     product_id SERIAL PRIMARY KEY,
+postgres(#     product_name VARCHAR(100) NOT NULL,
+postgres(#     price DECIMAL(10,2)
+postgres(# );
+CREATE TABLE
+postgres=# \d products
+                                           Table "public.products"
+    Column    |          Type          | Collation | Nullable |                   Default
+--------------+------------------------+-----------+----------+----------------------------------------------
+ product_id   | integer                |           | not null | nextval('products_product_id_seq'::regclass)
+ product_name | character varying(100) |           | not null |
+ price        | numeric(10,2)          |           |          |
+Indexes:
+    "products_pkey" PRIMARY KEY, btree (product_id)
+
+
+postgres=# CREATE TABLE transactions (
+postgres(#     transaction_id BIGSERIAL PRIMARY KEY,  -- Can handle very large numbers
+postgres(#     amount DECIMAL(15,2),
+postgres(#     transaction_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+postgres(# );
+CREATE TABLE
+postgres=# CREATE TABLE orders (
+postgres(#     order_id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+postgres(#     customer_name VARCHAR(100),
+postgres(#     order_date DATE DEFAULT CURRENT_DATE
+postgres(# );
+CREATE TABLE
+postgres=# CREATE TABLE customers (
+postgres(#     customer_id INTEGER GENERATED BY DEFAULT AS IDENTITY PRIMARY KEY,
+postgres(#     customer_name VARCHAR(100),
+postgres(#     email VARCHAR(150)
+postgres(# );
+CREATE TABLE
+postgres=# INSERT INTO customers (customer_id, customer_name, email)
+postgres-# VALUES (1000, 'VIP Customer', 'vip@example.com');
+INSERT 0 1
+postgres=# \d customers
+                                     Table "public.customers"
+    Column     |          Type          | Collation | Nullable |             Default
+---------------+------------------------+-----------+----------+----------------------------------
+ customer_id   | integer                |           | not null | generated by default as identity
+ customer_name | character varying(100) |           |          |
+ email         | character varying(150) |           |          |
+Indexes:
+    "customers_pkey" PRIMARY KEY, btree (customer_id)
+
+
+postgres=# SELECT * FROM customers;
+ customer_id | customer_name |      email
+-------------+---------------+-----------------
+        1000 | VIP Customer  | vip@example.com
+(1 row)
+
+
+postgres=# CREATE TABLE departments (
+postgres(#     dept_id INTEGER PRIMARY KEY,
+postgres(#     dept_name VARCHAR(100)
+postgres(# );
+CREATE TABLE
+postgres=# INSERT INTO departments VALUES (1, 'Computer Science');
+INSERT 0 1
+postgres=# INSERT INTO departments VALUES (1, 'Mathematics');
+ERROR:  character with byte sequence 0xd0 0x9e in encoding "UTF8" has no equivalent in encoding "WIN1252"
+postgres=# INSERT INTO departments VALUES (NULL, 'Physics');
+ERROR:  character with byte sequence 0xd0 0x9e in encoding "UTF8" has no equivalent in encoding "WIN1252"
+postgres=# \d
+                       List of relations
+ Schema |              Name               |   Type   |  Owner
+--------+---------------------------------+----------+----------
+ public | course_enrollments              | table    | postgres
+ public | customers                       | table    | postgres
+ public | customers_customer_id_seq       | sequence | postgres
+ public | departments                     | table    | postgres
+ public | orders                          | table    | postgres
+ public | orders_order_id_seq             | sequence | postgres
+ public | products                        | table    | postgres
+ public | products_product_id_seq         | sequence | postgres
+ public | students                        | table    | postgres
+ public | students_student_id_seq         | sequence | postgres
+ public | transactions                    | table    | postgres
+ public | transactions_transaction_id_seq | sequence | postgres
+(12 rows)
+
+
+postgres=# DROP TABLE course_enrollments;
+DROP TABLE
+postgres=#  DROP TABLE customers;
+DROP TABLE
+postgres=# DROP TABLE products;
+DROP TABLE
+postgres=# DROP TABLE students;
+DROP TABLE
+postgres=# DROP TABLE transactions;
+DROP TABLE
+postgres=# \d
+                 List of relations
+ Schema |        Name         |   Type   |  Owner
+--------+---------------------+----------+----------
+ public | departments         | table    | postgres
+ public | orders              | table    | postgres
+ public | orders_order_id_seq | sequence | postgres
+(3 rows)
+
+
+postgres=# DROP TABLE orders;
+DROP TABLE
+postgres=# DROP TABLE departments;
+DROP TABLE
+postgres=# exit
