@@ -1,0 +1,182 @@
+Microsoft Windows [Version 10.0.19045.6216]
+(c) Microsoft Corporation. All rights reserved.
+
+C:\Users\eilance>chcp 65001
+Active code page: 65001
+
+C:\Users\eilance>psql -U postgres -h localhost -p 5432 -d postgres
+Password for user postgres:
+psql (17.6)
+WARNING: Console code page (65001) differs from Windows code page (1252)
+         8-bit characters might not work correctly. See psql reference
+         page "Notes for Windows users" for details.
+Type "help" for help.
+
+postgres=# \d students
+                                    Table "public.students"
+ Column |          Type          | Collation | Nullable |               Default
+--------+------------------------+-----------+----------+--------------------------------------
+ id     | integer                |           | not null | nextval('students_id_seq'::regclass)
+ name   | character varying(100) |           |          |
+ age    | integer                |           |          |
+Indexes:
+    "students_pkey" PRIMARY KEY, btree (id)
+
+
+postgres=# DROP TABLE
+postgres-# CREATE TABLE students (
+postgres(#     name VARCHAR(50),
+postgres(#     email VARCHAR(100),
+postgres(#     faculty VARCHAR(50)
+postgres(# );
+ERROR:  character with byte sequence 0xd0 0x9e in encoding "UTF8" has no equivalent in encoding "WIN1252"
+postgres=# DROP TABLE students
+postgres-# CREATE TABLE students (
+postgres(#     name VARCHAR(50),
+postgres(#     email VARCHAR(100),
+postgres(#     faculty VARCHAR(50)
+postgres(# );
+ERROR:  character with byte sequence 0xd0 0x9e in encoding "UTF8" has no equivalent in encoding "WIN1252"
+postgres=# \encoding WIN1251
+postgres=# CREATE TABLE students (
+postgres(#     name VARCHAR(50),
+postgres(#     email VARCHAR(100),
+postgres(#     faculty VARCHAR(50)
+postgres(# );
+ÎØÈÁÊÀ:  îòíîøåíèå "students" óæå ñóùåñòâóåò
+postgres=# \d students
+                                    Table "public.students"
+ Column |          Type          | Collation | Nullable |               Default
+--------+------------------------+-----------+----------+--------------------------------------
+ id     | integer                |           | not null | nextval('students_id_seq'::regclass)
+ name   | character varying(100) |           |          |
+ age    | integer                |           |          |
+Indexes:
+    "students_pkey" PRIMARY KEY, btree (id)
+
+
+postgres=# DROP TABLE
+postgres-# d\students
+invalid command \students
+Try \? for help.
+postgres-# \d students
+                                    Table "public.students"
+ Column |          Type          | Collation | Nullable |               Default
+--------+------------------------+-----------+----------+--------------------------------------
+ id     | integer                |           | not null | nextval('students_id_seq'::regclass)
+ name   | character varying(100) |           |          |
+ age    | integer                |           |          |
+Indexes:
+    "students_pkey" PRIMARY KEY, btree (id)
+
+
+postgres-# DROP TABLE students
+postgres-# \d students
+                                    Table "public.students"
+ Column |          Type          | Collation | Nullable |               Default
+--------+------------------------+-----------+----------+--------------------------------------
+ id     | integer                |           | not null | nextval('students_id_seq'::regclass)
+ name   | character varying(100) |           |          |
+ age    | integer                |           |          |
+Indexes:
+    "students_pkey" PRIMARY KEY, btree (id)
+
+
+postgres-# DROP TABLE
+postgres-# CREATE TABLE students (
+postgres(#     name VARCHAR(50),
+postgres(#     email VARCHAR(100),
+postgres(#     faculty VARCHAR(50)
+postgres(# );
+ÎØÈÁÊÀ:  îøèáêà ñèíòàêñèñà (ïðèìåðíîå ïîëîæåíèå: "DROP")
+LINE 3: DROP TABLE students
+        ^
+postgres=# DROP TABLE students;
+DROP TABLE
+postgres=# CREATE TABLE students (
+postgres(#     name VARCHAR(50),
+postgres(#     email VARCHAR(100),
+postgres(#     faculty VARCHAR(50)
+postgres(# );
+CREATE TABLE
+postgres=# \d students
+                      Table "public.students"
+ Column  |          Type          | Collation | Nullable | Default
+---------+------------------------+-----------+----------+---------
+ name    | character varying(50)  |           |          |
+ email   | character varying(100) |           |          |
+ faculty | character varying(50)  |           |          |
+
+
+postgres=# DROP TABLE students;
+DROP TABLE
+postgres=# CREATE TABLE students (
+postgres(# id SERIAL PRIMARY KEY,
+postgres(# name VARCHAR(100),
+postgres(# email VARCHAR(100),
+postgres(# faculty VARCHAR(50)
+postgres(# );
+CREATE TABLE
+postgres=# \d students
+                                    Table "public.students"
+ Column  |          Type          | Collation | Nullable |               Default
+---------+------------------------+-----------+----------+--------------------------------------
+ id      | integer                |           | not null | nextval('students_id_seq'::regclass)
+ name    | character varying(100) |           |          |
+ email   | character varying(100) |           |          |
+ faculty | character varying(50)  |           |          |
+Indexes:
+    "students_pkey" PRIMARY KEY, btree (id)
+
+
+postgres=# INSERT INTO students (name, email, faculty) VALUES ('Alymbek', 'alymbek@example.com', 'COMSEH'), ('Timur', 'timur@example.com', 'MED'), ('Beka', 'beka@example.com', 'MAT');
+INSERT 0 3
+postgres=# SELECT * FROM students;
+ id |  name   |        email        | faculty
+----+---------+---------------------+---------
+  1 | Alymbek | alymbek@example.com | COMSEH
+  2 | Timur   | timur@example.com   | MED
+  3 | Beka    | beka@example.com    | MAT
+(3 rows)
+
+
+postgres=# SELECT student_id, faculty FROM students;
+ÎØÈÁÊÀ:  ñòîëáåö "student_id" íå ñóùåñòâóåò
+LINE 1: SELECT student_id, faculty FROM students;
+               ^
+postgres=# SELECT id, faculty FROM students;
+ id | faculty
+----+---------
+  1 | COMSEH
+  2 | MED
+  3 | MAT
+(3 rows)
+
+
+postgres=# SELECT name, email FROM students WHERE name = 'Timur';
+ name  |       email
+-------+-------------------
+ Timur | timur@example.com
+(1 row)
+
+
+postgres=# SELECT name, email FROM students ORDER BY;
+ÎØÈÁÊÀ:  îøèáêà ñèíòàêñèñà (ïðèìåðíîå ïîëîæåíèå: ";")
+LINE 1: SELECT name, email FROM students ORDER BY;
+                                                 ^
+postgres=# SELECT name, email FROM students LIMIT 2;
+  name   |        email
+---------+---------------------
+ Alymbek | alymbek@example.com
+ Timur   | timur@example.com
+(2 rows)
+
+
+postgres=# SELECT name, faculty FROM students WHERE faculty = 'MAT';
+ name | faculty
+------+---------
+ Beka | MAT
+(1 row)
+
+
+postgres=#
