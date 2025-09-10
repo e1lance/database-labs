@@ -1,0 +1,244 @@
+Microsoft Windows [Version 10.0.19045.6216]
+(c) Microsoft Corporation. All rights reserved.
+
+C:\Users\eilance>psql -U postgres -h localhost -p 5432 -d postgres
+Password for user postgres:
+psql (17.6)
+WARNING: Console code page (437) differs from Windows code page (1252)
+         8-bit characters might not work correctly. See psql reference
+         page "Notes for Windows users" for details.
+Type "help" for help.
+
+postgres=# CREATE TABLE departments (
+postgres(# dept_id SERIAL PRIMARY KEY,
+postgres(# dept_name VARCHAR(100) NOT NULL,
+postgres(# location VARCHAR(100)
+postgres(# );
+CREATE TABLE
+postgres=# CREATE TABLE employees (
+postgres(# emp_id SERIAL PRIMARY KEY,
+postgres(# first_name VARCHAR(50) NOT NULL,
+postgres(# last_name VARCHAR(50) NOT NULL,
+postgres(# dept_id INTEGER REFERENCES departments(dept_id)
+postgres(# );
+CREATE TABLE
+postgres=# \d employees
+                                       Table "public.employees"
+   Column   |         Type          | Collation | Nullable |                  Default
+------------+-----------------------+-----------+----------+-------------------------------------------
+ emp_id     | integer               |           | not null | nextval('employees_emp_id_seq'::regclass)
+ first_name | character varying(50) |           | not null |
+ last_name  | character varying(50) |           | not null |
+ dept_id    | integer               |           |          |
+Indexes:
+    "employees_pkey" PRIMARY KEY, btree (emp_id)
+Foreign-key constraints:
+    "employees_dept_id_fkey" FOREIGN KEY (dept_id) REFERENCES departments(dept_id)
+
+
+postgres=# INSERT INTO departments (dept_name, location) VALUES
+postgres-# ('John', 'Smith', 1);
+ERROR:  character with byte sequence 0xd0 0x9e in encoding "UTF8" has no equivalent in encoding "WIN1252"
+postgres=# INSERT INTO departments (dept_name, location) VALUES
+postgres-# ('Engineering', 'Builing A'),
+postgres-# ('Marketing', 'Building B'),
+postgres-# ('HR', 'Building C');
+INSERT 0 3
+postgres=# INSERT INTO employees (first_name, last_name, dept_id) VALUES
+postgres-# ('John', 'Smith', 1);
+INSERT 0 1
+postgres=# \d employees
+                                       Table "public.employees"
+   Column   |         Type          | Collation | Nullable |                  Default
+------------+-----------------------+-----------+----------+-------------------------------------------
+ emp_id     | integer               |           | not null | nextval('employees_emp_id_seq'::regclass)
+ first_name | character varying(50) |           | not null |
+ last_name  | character varying(50) |           | not null |
+ dept_id    | integer               |           |          |
+Indexes:
+    "employees_pkey" PRIMARY KEY, btree (emp_id)
+Foreign-key constraints:
+    "employees_dept_id_fkey" FOREIGN KEY (dept_id) REFERENCES departments(dept_id)
+
+
+postgres=# \d departments
+                                        Table "public.departments"
+  Column   |          Type          | Collation | Nullable |                   Default
+-----------+------------------------+-----------+----------+----------------------------------------------
+ dept_id   | integer                |           | not null | nextval('departments_dept_id_seq'::regclass)
+ dept_name | character varying(100) |           | not null |
+ location  | character varying(100) |           |          |
+Indexes:
+    "departments_pkey" PRIMARY KEY, btree (dept_id)
+Referenced by:
+    TABLE "employees" CONSTRAINT "employees_dept_id_fkey" FOREIGN KEY (dept_id) REFERENCES departments(dept_id)
+
+
+postgres=# SELECT * FROM employees
+postgres-# SELECT * FROM employees;
+ERROR:  character with byte sequence 0xd0 0x9e in encoding "UTF8" has no equivalent in encoding "WIN1252"
+postgres=# SELECT * FROM departments;
+ dept_id |  dept_name  |  location
+---------+-------------+------------
+       1 | Engineering | Builing A
+       2 | Marketing   | Building B
+       3 | HR          | Building C
+(3 rows)
+
+
+postgres=# SELECT * FROM employees;
+ emp_id | first_name | last_name | dept_id
+--------+------------+-----------+---------
+      1 | John       | Smith     |       1
+(1 row)
+
+
+postgres=# DROP TABLE departments;
+ERROR:  character with byte sequence 0xd0 0x9e in encoding "UTF8" has no equivalent in encoding "WIN1252"
+postgres=# DROP TABLE employees;
+DROP TABLE
+postgres=# DROP TABLE departments;
+DROP TABLE
+postgres=# CREATE TABLE departments (
+postgres(# dept_id SERIAL PRIMARY KEY,
+postgres(# dept_name VARCHAR(100) NOT NULL,
+postgres(# manager_name VARCHAR(100),
+postgres(# budget DECIMAL (10, 2)
+postgres(# );
+CREATE TABLE
+postgres=# CREATE TABLE employees (
+postgres(# emp_id SERIAL PRIMARY KEY,
+postgres(# first_name VARCHAR(50) NOT NULL,
+postgres(# last_name VARCHAR(50) NOT NULL,
+postgres(# position VARCHAR(100),
+postgres(# salary DECIMAL(10,2),
+postgres(# hire_date DATE DEFAULT CURRENT_DATE,
+postgres(# dept_id INTEGER NOT NULL,
+postgres(# FOREIGN KEY (dept_id) REFERENCES departments(dept_id) ON DELETE RESTRICT
+postgres(# );
+CREATE TABLE
+postgres=# INSERT INTO departments (dept_name, manager_name, budget) VALUES
+postgres-# ('Engeneering', 'Alice Johnson', 500000.00),
+postgres-# ('Marketing', 'Bob Wilson', 200000.00);
+INSERT 0 2
+postgres=# INSERT INTO employees (first_name, last_name, position, salary, dept_id) VALUES
+postgres-# ('John', 'Smith', 'Software Engineer' 75000.00, 1),
+postgres-# ('Jane', 'Doe', 'Senior Developer', 85000.00, 1),
+postgres-# ('Mike', 'Brown', 'DevOps Engineer', 80000.00, 1),
+postgres-# ('Sarah', 'Davis', 'Marketing Specialist', 55000.00, 2);
+ERROR:  character with byte sequence 0xd0 0x9e in encoding "UTF8" has no equivalent in encoding "WIN1252"
+postgres=# INSERT INTO employees (first_name, last_name, position, salary, dept_id) VALUES
+postgres-# ('John', 'Smith', 'Software Engineer', 75000.00, 1),
+postgres-# ('Jane', 'Doe', 'Senior Developer', 85000.00, 1),
+postgres-# ('Mike', 'Brown', 'DevOps Engineer', 80000.00, 1),
+postgres-# ('Sarah', 'Davis', 'Marketing Specialist', 55000.00, 2);
+INSERT 0 4
+postgres=#   SELECT d.dept_name, e.first_name, e.last_name, e.position
+postgres-# FROM departments d
+postgres-# JOIN employees e ON d.dept_id = e.dept_id
+postgres-# ORDER BY d.dept_name, e.last_name;
+  dept_name  | first_name | last_name |       position
+-------------+------------+-----------+----------------------
+ Engeneering | Mike       | Brown     | DevOps Engineer
+ Engeneering | Jane       | Doe       | Senior Developer
+ Engeneering | John       | Smith     | Software Engineer
+ Marketing   | Sarah      | Davis     | Marketing Specialist
+(4 rows)
+
+
+postgres=# CREATE TABLE users (
+postgres(# user_id SERIAL PRIMARY KEY,
+postgres(# username VARCHAR(50) UNIQUE NOT NULL,
+postgres(# email VARCHAR(100) UNIQUE NOT NULL,
+postgres(# created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+postgres(# );
+CREATE TABLE
+postgres=# CREATE TABLE user_profiles (
+postgres(# profile_id SERIAL PRIMARY KEY,
+postgres(# user_id INTEGER UNIQUE NOT NULL
+postgres(# first_name VARCHAR(50),
+postgres(# last_name VARCHAR(50),
+postgres(# bio TEXT,
+postgres(# profile_picture_url VARCHAR(255),
+postgres(# FOREIGN KEY (user_id) REFERENCES user(user_id) ON DELETE CASCADE
+postgres(# );
+ERROR:  character with byte sequence 0xd0 0x9e in encoding "UTF8" has no equivalent in encoding "WIN1252"
+postgres=# CREATE TABLE user_profiles (
+postgres(# user_id SERIAL PRIMARY KEY,
+postgres(# );
+ERROR:  character with byte sequence 0xd0 0x9e in encoding "UTF8" has no equivalent in encoding "WIN1252"
+postgres=# CREATE TABLE user_profiles (
+postgres(# profile_id SERIAL PRIMARY KEY,
+postgres(# user_id INTEGER UNIQUE NOT NULL,
+postgres(# first_name VARCHAR(50),
+postgres(# last_name VARCHAR(50),
+postgres(# bio TEXT,
+postgres(# profile_picture_url VARCHAR(255),
+postgres(# FOREIGN KEY (user_id) REFERENCES user(user_id) ON DELETE CASCADE
+postgres(# );
+ERROR:  character with byte sequence 0xd0 0x9e in encoding "UTF8" has no equivalent in encoding "WIN1252"
+postgres=# CREATE TABLE user_profiles (
+postgres(# profile_id SERIAL PRIMARY KEY,
+postgres(# user_id INTEGER UNIQUE NOT NULL
+postgres(# first_name VARCHAR(50),
+postgres(# last_name VARCHAR(50),
+postgres(# bio TEXT,
+postgres(# profile_picture_url VARCHAR(255),
+postgres(# FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+postgres(# );
+ERROR:  character with byte sequence 0xd0 0x9e in encoding "UTF8" has no equivalent in encoding "WIN1252"
+postgres=# CREATE TABLE user_profiles (
+postgres(# user_id SERIAL PRIMARY KEY,
+postgres(# );
+ERROR:  character with byte sequence 0xd0 0x9e in encoding "UTF8" has no equivalent in encoding "WIN1252"
+postgres=# CREATE TABLE user_profiles (
+postgres(# profile_id SERIAL PRIMARY KEY,
+postgres(# user_id INTEGER UNIQUE NOT NULL,
+postgres(# first_name VARCHAR(50),
+postgres(# last_name VARCHAR(50),
+postgres(# bio TEXT,
+postgres(# profile_picture_url VARCHAR(255),
+postgres(# FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+postgres(# );
+CREATE TABLE
+postgres=# INSERT INTO users (username, email) VALUES
+postgres-# ('johndoe', 'john@example.com');
+INSERT 0 1
+postgres=# INSERT INTO user_profiles (user_id, first_name, last_name, bio) VAULUES
+postgres-# (1, 'John', 'Doe', 'Software developer passionate about databases');
+ERROR:  character with byte sequence 0xd0 0x9e in encoding "UTF8" has no equivalent in encoding "WIN1252"
+postgres=# INSERT INTO user_profiles (user_id, first_name, last_name, bio) VALUES
+postgres-# (1, 'John', 'Doe', 'Software developer passionate about databases');
+INSERT 0 1
+postgres=# INSERT INTO user_profiles (user_id, first_name, last_name) VALUES
+postgres-# (1, 'Jane', 'Smith');
+ERROR:  character with byte sequence 0xd0 0x9e in encoding "UTF8" has no equivalent in encoding "WIN1252"
+postgres=# SELECT * FROM user_profiles
+postgres-# \d user_profiles
+                                              Table "public.user_profiles"
+       Column        |          Type          | Collation | Nullable |                      Default
+---------------------+------------------------+-----------+----------+---------------------------------------------------
+ profile_id          | integer                |           | not null | nextval('user_profiles_profile_id_seq'::regclass) user_id             | integer                |           | not null |
+ first_name          | character varying(50)  |           |          |
+ last_name           | character varying(50)  |           |          |
+ bio                 | text                   |           |          |
+ profile_picture_url | character varying(255) |           |          |
+Indexes:
+    "user_profiles_pkey" PRIMARY KEY, btree (profile_id)
+    "user_profiles_user_id_key" UNIQUE CONSTRAINT, btree (user_id)
+Foreign-key constraints:
+    "user_profiles_user_id_fkey" FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+
+
+postgres-# SELECT * FROM uesrs
+postgres-# SELECT * FROM users
+postgres-# SELECT * FROM users;
+ERROR:  character with byte sequence 0xd0 0x9e in encoding "UTF8" has no equivalent in encoding "WIN1252"
+postgres=# SELECT * FROM user_profiles;
+ profile_id | user_id | first_name | last_name |                      bio                      | profile_picture_url
+------------+---------+------------+-----------+-----------------------------------------------+---------------------
+          1 |       1 | John       | Doe       | Software developer passionate about databases |
+(1 row)
+
+
+postgres=#
