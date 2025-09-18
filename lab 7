@@ -1,0 +1,264 @@
+Microsoft Windows [Version 10.0.19045.6332]
+(c) Microsoft Corporation. All rights reserved.
+
+C:\Users\eilance>psql -U postgres -h localhost -p 5432 -d postgres
+Password for user postgres:
+psql (17.6)
+WARNING: Console code page (437) differs from Windows code page (1252)
+         8-bit characters might not work correctly. See psql reference
+         page "Notes for Windows users" for details.
+Type "help" for help.
+
+postgres=# \d
+                      List of relations
+ Schema |             Name             |   Type   |  Owner
+--------+------------------------------+----------+----------
+ public | courses                      | table    | postgres
+ public | departments                  | table    | postgres
+ public | departments_dept_id_seq      | sequence | postgres
+ public | employees                    | table    | postgres
+ public | employees_emp_id_seq         | sequence | postgres
+ public | students                     | table    | postgres
+ public | students_student_id_seq      | sequence | postgres
+ public | user_profiles                | table    | postgres
+ public | user_profiles_profile_id_seq | sequence | postgres
+ public | users                        | table    | postgres
+ public | users_user_id_seq            | sequence | postgres
+(11 rows)
+
+
+postgres=# DROP TABLE users;
+ERROR:  character with byte sequence 0xd0 0x9e in encoding "UTF8" has no equivalent in encoding "WIN1252"
+postgres=# DROP TABLE courses;
+DROP TABLE
+postgres=# DROP TABLE departments;
+ERROR:  character with byte sequence 0xd0 0x9e in encoding "UTF8" has no equivalent in encoding "WIN1252"
+postgres=# DROP TABLE employees;
+DROP TABLE
+postgres=# DROP TABLE students;
+DROP TABLE
+postgres=# DROP TABLE user_profiles;
+DROP TABLE
+postgres=# DROP TABLE users;
+DROP TABLE
+postgres=# DROP TABLE departments;
+DROP TABLE
+postgres=# CREATE TABLE students (
+postgres(# student_id INT PRIMARY KEY,
+postgres(# name VARCHAR(100)
+postgres(# );
+CREATE TABLE
+postgres=# CREATE TABLE student_phones (
+postgres(# student_id INT,
+postgres(# phone_number VARCHAR(15),
+postgres(# phone_type VARCHAR(20),
+postgres(# PRIMARY KEY (student_id, phone_number),
+postgres(# FOREIGN KEY (student_id) REFERENCES students(student_id)
+postgres(# );
+CREATE TABLE
+postgres=# CREATE TABLE courses (
+postgres(# course_id INT,
+postgres(# student_id INT,
+postgres(# grade CHAR(2),
+postgres(# PRIMARY KEY (student_id, course_id),
+postgres(# FOREIGN KEY (student_id) REFERENCES students(student_id),
+postgres(# FOREIGN KEY (course_id) REFERENCES courses(course_id)
+postgres(# );
+ERROR:  character with byte sequence 0xd0 0x9e in encoding "UTF8" has no equivalent in encoding "WIN1252"
+postgres=# CREATE TABLE courses (
+postgres(# course_id INT PRIMARY KEY,
+postgres(# course_name VARCHAR(100),
+postgres(# credits INT
+postgres(# );
+CREATE TABLE
+postgres=# CREATE TABLE enrollments (
+postgres(# student_id INT,
+postgres(# course_id INT,
+postgres(# grade CHAR(2),
+postgres(# PRIMARY KEY (student_id, course_id),
+postgres(# FOREIGN KEY (student_id) REFERENCES students(student_id),
+postgres(# FOREIGN KEY (course_id) REFERENCES courses(course_id)
+postgres(# );
+CREATE TABLE
+postgres=# CREATE TABLE departments (
+postgres(# department_id INT PRIMARY KEY,
+postgres(# department_name VARCHAR(100),
+postgres(# department_head VARCHAR(100)
+postgres(# );
+CREATE TABLE
+postgres=# CREATE TABLE students (
+postgres(# student_id INT PRIMARY KEY,
+postgres(# name VARCHAR(100),
+postgres(# department_id INT,
+postgres(# FOREIGN KEAY (department_id) REFERENCES departmnets(departmnent_id)
+postgres(# );
+ERROR:  character with byte sequence 0xd0 0x9e in encoding "UTF8" has no equivalent in encoding "WIN1252"
+postgres=# SELECT * FORM studentsl
+postgres-# SELECT * FORM students;
+ERROR:  character with byte sequence 0xd0 0x9e in encoding "UTF8" has no equivalent in encoding "WIN1252"
+postgres=# SELECT * FORM students;
+ERROR:  character with byte sequence 0xd0 0x9e in encoding "UTF8" has no equivalent in encoding "WIN1252"
+postgres=# SELECT * FORM students
+postgres-# SELECT * FROM students;
+ERROR:  character with byte sequence 0xd0 0x9e in encoding "UTF8" has no equivalent in encoding "WIN1252"
+postgres=# \d
+             List of relations
+ Schema |      Name      | Type  |  Owner
+--------+----------------+-------+----------
+ public | courses        | table | postgres
+ public | departments    | table | postgres
+ public | enrollments    | table | postgres
+ public | student_phones | table | postgres
+ public | students       | table | postgres
+(5 rows)
+
+
+postgres=# SELECT * FROM students;
+ student_id | name
+------------+------
+(0 rows)
+
+
+postgres=# DROP TABLE students;
+ERROR:  character with byte sequence 0xd0 0x9e in encoding "UTF8" has no equivalent in encoding "WIN1252"
+postgres=# DROP TABLE student_phones;
+DROP TABLE
+postgres=# DROP TABLE students;
+ERROR:  character with byte sequence 0xd0 0x9e in encoding "UTF8" has no equivalent in encoding "WIN1252"
+postgres=# DROP TABLE courses;
+ERROR:  character with byte sequence 0xd0 0x9e in encoding "UTF8" has no equivalent in encoding "WIN1252"
+postgres=# DROP TABLE enrollments;
+DROP TABLE
+postgres=# DROP TABLE courses;
+DROP TABLE
+postgres=# DROP TABLE students;
+DROP TABLE
+postgres=# CREATE TABLE students (
+postgres(# name VARCHAR(100),
+postgres(# );
+ERROR:  character with byte sequence 0xd0 0x9e in encoding "UTF8" has no equivalent in encoding "WIN1252"
+postgres=# CREATE TABLE students (
+postgres(# student_id INT PRIMARY KEY,
+postgres(# name VARCHAR(100),
+postgres(# department_id INT,
+postgres(# FOREIGN KEAY (department_id) REFERENCES departmnets(departmnent_id)
+postgres(# );
+ERROR:  character with byte sequence 0xd0 0x9e in encoding "UTF8" has no equivalent in encoding "WIN1252"
+postgres=# \d
+            List of relations
+ Schema |    Name     | Type  |  Owner
+--------+-------------+-------+----------
+ public | departments | table | postgres
+(1 row)
+
+
+postgres=# CREATE TABLE students (
+postgres(# student_id INT PRIMARY KEY,
+postgres(# name VARCHAR(100),
+postgres(# department_id INT,
+postgres(# FOREIGN KEY (department_id) REFERENCES departments(department_id)
+postgres(# );
+CREATE TABLE
+postgres=# SELECT * FROM students;
+ student_id | name | department_id
+------------+------+---------------
+(0 rows)
+
+
+postgres=# SELECT * FROM departments;
+ department_id | department_name | department_head
+---------------+-----------------+-----------------
+(0 rows)
+
+
+postgres=# DROP TABLE students;
+DROP TABLE
+postgres=# DROP TABLE departments;
+DROP TABLE
+postgres=# CREATE TABLE authors (
+postgres(# author_id SERIAL PRIMARY KEY,
+postgres(# first_name VARCHAR(50) NOT NULL,
+postgres(# last_name VARCHAR(50) NOT NULL,
+postgres(# birth_date DATE
+postgres(# );
+CREATE TABLE
+postgres=# CREATE TABLE books (
+postgres(# book_id SERIAL PRIMARY KEY,
+postgres(# title VARCHAR (200) NOT NULL,
+postgres(# isbn VARCHAR(13) UNIQUE,
+postgres(# publication_year INTEGER,
+postgres(# available_copies INTEGER DEFAULT 1
+postgres(# );
+CREATE TABLE
+postgres=# CREATE TABLE book_authors (
+postgres(# book_id INTEGER,
+postgres(# author_id INTEGER,
+postgres(# PRIMARY KEY (book_id, author_id),
+postgres(# FOREIGN KEY (book_id) REFERENCES book(book_id),
+postgres(# FOREIGN KEY (author_id) REFERENCES authors(author_id)
+postgres(# );
+ERROR:  character with byte sequence 0xd0 0x9e in encoding "UTF8" has no equivalent in encoding "WIN1252"
+postgres=# CREATE TABLE book_authors (
+postgres(# book_id INTEGER,
+postgres(# author_id INTEGER,
+postgres(# PRIMARY KEY (book_id, author_id),
+postgres(# FOREIGN KEY (book_id) REFERENCES books(book_id),
+postgres(# FOREIGN KEY (author_id) REFERENCES authors(author_id)
+postgres(# );
+CREATE TABLE
+postgres=# CREATE TABLE members (
+postgres(# member_id SERIAL PRIMARY KEY,
+postgres(# first_name VARCHAR(50) NOT NULL,
+postgres(# last_name VARCHAR(50) NOT NULL,
+postgres(# email VARCHAR(100) UNIQUE NOT NULL,
+postgres(# phone VARCHAR(15),
+postgres(# membership_date DATE DEFAULT CURRENT_DATE
+postgres(# );
+CREATE TABLE
+postgres=# CREATE TABLE loans (
+postgres(# loan_id SERIAL PRIMARY KEY,
+postgres(# member_id INTEGER NOT NULL,
+postgres(# book_id INTEGER NPT NULL,
+postgres(# loan_date DATE DEFAULT CURRENT_DATE,
+postgres(# due_date DATE NOT NULL,
+postgres(# return_date DATE,
+postgres(# late_fee DECIMAL(10,2) DEFAULT 0.00,
+postgres(# FOREIGN KEY (member_id) REFERENCES members(member_id),
+postgres(# FOREIGN KEY (book_id) REFERENCES books(book_id)
+postgres(# );
+ERROR:  character with byte sequence 0xd0 0x9e in encoding "UTF8" has no equivalent in encoding "WIN1252"
+postgres=# CREATE TABLE loans (
+postgres(# loan_id SERIAL PRIMARY KEY,
+postgres(# member_id INTEGER NOT NULL,
+postgres(# book_id INTEGER NOT NULL,
+postgres(# loan_date DATE DEFAULT CURRENT_DATE,
+postgres(# due_date DATE NOT NULL,
+postgres(# return_date DATE,
+postgres(# late_fee DECIMAL(10,2) DEFAULT 0.00,
+postgres(# FOREIGN KEY (member_id) REFERENCES members(member_id),
+postgres(# FOREIGN KEY (book_id) REFERENCES books(book_id)
+postgres(# );
+CREATE TABLE
+postgres=# \d
+                  List of relations
+ Schema |         Name          |   Type   |  Owner
+--------+-----------------------+----------+----------
+ public | authors               | table    | postgres
+ public | authors_author_id_seq | sequence | postgres
+ public | book_authors          | table    | postgres
+ public | books                 | table    | postgres
+ public | books_book_id_seq     | sequence | postgres
+ public | loans                 | table    | postgres
+ public | loans_loan_id_seq     | sequence | postgres
+ public | members               | table    | postgres
+ public | members_member_id_seq | sequence | postgres
+(9 rows)
+
+
+postgres=# SELECT * FROM authors;
+ author_id | first_name | last_name | birth_date
+-----------+------------+-----------+------------
+(0 rows)
+
+
+postgres=#
