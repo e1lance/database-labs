@@ -1,0 +1,90 @@
+Microsoft Windows [Version 10.0.19045.6396]
+(c) Microsoft Corporation. All rights reserved.
+
+C:\Users\eilance>psql -U postgres -h localhost -p 5432 -d postgres
+Password for user postgres:
+psql (17.6)
+WARNING: Console code page (437) differs from Windows code page (1252)
+         8-bit characters might not work correctly. See psql reference
+         page "Notes for Windows users" for details.
+Type "help" for help.
+
+postgres=# \dt
+            List of relations
+ Schema |     Name     | Type  |  Owner
+--------+--------------+-------+----------
+ public | authors      | table | postgres
+ public | book_authors | table | postgres
+ public | books        | table | postgres
+ public | loans        | table | postgres
+ public | members      | table | postgres
+(5 rows)
+
+
+postgres=# DROP TABLE members;
+ERROR:  character with byte sequence 0xd0 0x9e in encoding "UTF8" has no equivalent in encoding "WIN1252"
+postgres=# DROP TABLE members
+postgres-# ;
+ERROR:  character with byte sequence 0xd0 0x9e in encoding "UTF8" has no equivalent in encoding "WIN1252"
+postgres=# DROP TABLE authors;
+ERROR:  character with byte sequence 0xd0 0x9e in encoding "UTF8" has no equivalent in encoding "WIN1252"
+postgres=# DROP TABLE loans;
+DROP TABLE
+postgres=# DROP TABLE books;
+ERROR:  character with byte sequence 0xd0 0x9e in encoding "UTF8" has no equivalent in encoding "WIN1252"
+postgres=# DROP TABLE members;
+DROP TABLE
+postgres=# DROP TABLE books;
+ERROR:  character with byte sequence 0xd0 0x9e in encoding "UTF8" has no equivalent in encoding "WIN1252"
+postgres=# DROP TABLE book_authors;
+DROP TABLE
+postgres=# DROP TABLE books;
+DROP TABLE
+postgres=# DROP TABLE authors;
+DROP TABLE
+postgres=# \dt
+Did not find any relations.
+postgres=# CREATE TABLE Students (
+postgres(# student_id SERIAL PRIMARY KEY,
+postgres(# first_name VARCHAR(50),
+postgres(# last_name VARCHAR(50),
+postgres(# birth_date DATE
+postgres(# );
+CREATE TABLE
+postgres=# INSERT INTO Students (first_name, last_name, birth_date)
+postgres-# VALUES ('Aibek', 'Sharshenov', '2002-05-12');
+INSERT 0 1
+postgres=# INSERT INTO Students (first_name, last_name, birth_date) VALUES
+postgres-# ('Ainura', 'Toktomamatova', '2001-09-23'),
+postgres-# ('Bakyt', 'Mamatov', '2003-01-15'),
+postgres-# ('Gulzat', 'Sultanova', '2002-07-30');
+INSERT 0 3
+postgres=# UPDATE Students
+postgres-# SET birth_date = '2002-05-15'
+postgres-# WHERE first_name = 'Aibek' AND last_name = 'Sharshenov';
+UPDATE 1
+postgres=# DELETE FROM Students
+postgres-# WHERE first_name = 'Gulzat' AND last_name = 'Sultanova';
+DELETE 1
+postgres=# DELETE FROM Students
+postgres-# WHERE birth_date < '2002-01-01';
+DELETE 1
+postgres=# COPY Students(first_name, last_name, birth_date)
+postgres-# FROM '/path/to/students.csv'
+postgres-# DELIMITER ','
+postgres-# CSV HEADER;
+ERROR:  character with byte sequence 0xd0 0x9e in encoding "UTF8" has no equivalent in encoding "WIN1252"
+postgres=# UPDATE Students
+postgres-# SET last_name = 'Bekov'
+postgres-# WHERE last_name IN ('Uulu', 'Isakov');
+UPDATE 0
+postgres=#
+postgres=# UPDATE Students
+postgres-# SET last_name = 'Bekov'
+postgres-# WHERE last_name IN ('Uulu', 'Isakov');
+UPDATE 0
+postgres=#
+postgres=# DELETE FROM Students
+postgres-# WHERE student_id IN (2, 3, 5);
+DELETE 1
+postgres=#
