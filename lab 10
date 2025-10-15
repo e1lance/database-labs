@@ -1,0 +1,280 @@
+Microsoft Windows [Version 10.0.19045.6456]
+(c) Microsoft Corporation. All rights reserved.
+
+C:\Users\eilance>psql -U postgres -h localhost -p 5432 -d postgres
+Password for user postgres:
+psql (17.6)
+WARNING: Console code page (437) differs from Windows code page (1252)
+         8-bit characters might not work correctly. See psql reference
+         page "Notes for Windows users" for details.
+Type "help" for help.
+
+postgres=# \dt
+Did not find any relations.
+postgres=# CREATE TABLE employees (
+postgres(#     id SERIAL PRIMARY KEY,
+postgres(#     name VARCHAR(100),
+postgres(#     department VARCHAR(50),
+postgres(#     department_id INT,
+postgres(#     salary NUMERIC(10,2)
+postgres(# );
+CREATE TABLE
+postgres=# INSERT INTO employees (name, department, department_id, salary) VALUES
+postgres-# ('Alice', 'Engineering', 1, 120000),
+postgres-# ('Bob', 'Engineering', 1, 80000),
+postgres-# ('Charlie', 'Sales', 2, 65000),
+postgres-# ('Diana', 'Sales', 2, 72000),
+postgres-# ('Ethan', 'HR', 3, 55000),
+postgres-# ('Fiona', 'Marketing', 4, 60000);
+INSERT 0 6
+postgres=# CREATE TABLE products (
+postgres(#     id SERIAL PRIMARY KEY,
+postgres(#     product_name VARCHAR(100),
+postgres(#     price NUMERIC(8,2)
+postgres(# );
+CREATE TABLE
+postgres=# INSERT INTO products (product_name, price) VALUES
+postgres-# ('Strawberry', 25.00),
+postgres-# ('Blueberry', 30.00),
+postgres-# ('Blackberry', 35.00),
+postgres-# ('Raspberry', 40.00),
+postgres-# ('Apple', 15.00);
+INSERT 0 5
+postgres=# CREATE TABLE customers (
+postgres(#     id SERIAL PRIMARY KEY,
+postgres(#     customer_name VARCHAR(100)
+postgres(# );
+CREATE TABLE
+postgres=# INSERT INTO customers (customer_name) VALUES
+postgres-# ('Brad'),
+postgres-# ('Brandon'),
+postgres-# ('Brian'),
+postgres-# ('Alice'),
+postgres-# ('Barbara');
+INSERT 0 5
+postgres=# CREATE TABLE users (
+postgres(#     id SERIAL PRIMARY KEY,
+postgres(#     email VARCHAR(255)
+postgres(# );
+CREATE TABLE
+postgres=# INSERT INTO users (email) VALUES
+postgres-# ('brad@gmail.com'),
+postgres-# ('alice@yahoo.com'),
+postgres-# ('chris@outlook.com'),
+postgres-# ('barbara@gmail.com'),
+postgres-# ('john.doe@GMAIL.COM');
+INSERT 0 5
+postgres=# CREATE TABLE sales (
+postgres(#     id SERIAL PRIMARY KEY,
+postgres(#     employee_id INT REFERENCES employees(id),
+postgres(#     amount NUMERIC(10,2)
+postgres(# );
+CREATE TABLE
+postgres=# INSERT INTO sales (employee_id, amount) VALUES
+postgres-# (1, 1500),
+postgres-# (2, 500),
+postgres-# (3, 1200),
+postgres-# (4, 800),
+postgres-# (5, 300),
+postgres-# (6, 2000);
+INSERT 0 6
+postgres=# SELECT * FROM employees;
+ id |  name   | department  | department_id |  salary
+----+---------+-------------+---------------+-----------
+  1 | Alice   | Engineering |             1 | 120000.00
+  2 | Bob     | Engineering |             1 |  80000.00
+  3 | Charlie | Sales       |             2 |  65000.00
+  4 | Diana   | Sales       |             2 |  72000.00
+  5 | Ethan   | HR          |             3 |  55000.00
+  6 | Fiona   | Marketing   |             4 |  60000.00
+(6 rows)
+
+
+postgres=# SELECT name, department FROM employees;
+  name   | department
+---------+-------------
+ Alice   | Engineering
+ Bob     | Engineering
+ Charlie | Sales
+ Diana   | Sales
+ Ethan   | HR
+ Fiona   | Marketing
+(6 rows)
+
+
+postgres=# SELECT name, salary, salary * 0.10 AS potential_bonus
+postgres-# FROM employees;
+  name   |  salary   | potential_bonus
+---------+-----------+-----------------
+ Alice   | 120000.00 |      12000.0000
+ Bob     |  80000.00 |       8000.0000
+ Charlie |  65000.00 |       6500.0000
+ Diana   |  72000.00 |       7200.0000
+ Ethan   |  55000.00 |       5500.0000
+ Fiona   |  60000.00 |       6000.0000
+(6 rows)
+
+
+postgres=# SELECT name, salary
+postgres-# FROM employees
+postgres-# WHERE department = 'Sales';
+  name   |  salary
+---------+----------
+ Charlie | 65000.00
+ Diana   | 72000.00
+(2 rows)
+
+
+postgres=# SELECT name
+postgres-# FROM employees
+postgres-# WHERE salary > 75000 AND department = 'Engineering';
+ name
+-------
+ Alice
+ Bob
+(2 rows)
+
+
+postgres=# SELECT product_name, price
+postgres-# FROM products
+postgres-# WHERE price BETWEEN 20 AND 50;
+ product_name | price
+--------------+-------
+ Strawberry   | 25.00
+ Blueberry    | 30.00
+ Blackberry   | 35.00
+ Raspberry    | 40.00
+(4 rows)
+
+
+postgres=# SELECT customer_name
+postgres-# FROM customers
+postgres-# WHERE customer_name LIKE 'Bra%';
+ customer_name
+---------------
+ Brad
+ Brandon
+(2 rows)
+
+
+postgres=# SELECT product_name
+postgres-# FROM products
+postgres-# WHERE product_name LIKE '%berry';
+ product_name
+--------------
+ Strawberry
+ Blueberry
+ Blackberry
+ Raspberry
+(4 rows)
+
+
+postgres=# SELECT email
+postgres-# FROM users
+postgres-# WHERE email ILIKE '%@gmail.com';
+       email
+--------------------
+ brad@gmail.com
+ barbara@gmail.com
+ john.doe@GMAIL.COM
+(3 rows)
+
+
+postgres=# SELECT name
+postgres-# FROM employees
+postgres-# WHERE name ~ '^[AB]';
+ name
+-------
+ Alice
+ Bob
+(2 rows)
+
+
+postgres=# SELECT email
+postgres-# FROM users
+postgres-# WHERE email ~* '^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$';
+       email
+--------------------
+ brad@gmail.com
+ alice@yahoo.com
+ chris@outlook.com
+ barbara@gmail.com
+ john.doe@GMAIL.COM
+(5 rows)
+
+
+postgres=# SELECT name, department
+postgres-# FROM employees
+postgres-# WHERE department_id IN (3, 5, 7);
+ name  | department
+-------+------------
+ Ethan | HR
+(1 row)
+
+
+postgres=# -- Or with a subquery
+postgres=# SELECT name
+postgres-# FROM employees
+postgres-# WHERE id IN (SELECT employee_id FROM sales WHERE amount > 1000);
+  name
+---------
+ Alice
+ Charlie
+ Fiona
+(3 rows)
+
+
+postgres=# SELECT name
+postgres-# FROM employees e
+postgres-# WHERE EXISTS (
+postgres(#   SELECT 1
+postgres(#   FROM sales s
+postgres(#   WHERE s.employee_id = e.id AND s.amount > 1000
+postgres(# );
+  name
+---------
+ Alice
+ Charlie
+ Fiona
+(3 rows)
+
+
+postgres=# SELECT name, salary,
+postgres-#   CASE
+postgres-#     WHEN salary > 100000 THEN 'Senior'
+postgres-#     WHEN salary BETWEEN 60000 AND 100000 THEN 'Mid-Level'
+postgres-#     ELSE 'Junior'
+postgres-#   END AS employee_level
+postgres-# FROM employees;
+  name   |  salary   | employee_level
+---------+-----------+----------------
+ Alice   | 120000.00 | Senior
+ Bob     |  80000.00 | Mid-Level
+ Charlie |  65000.00 | Mid-Level
+ Diana   |  72000.00 | Mid-Level
+ Ethan   |  55000.00 | Junior
+ Fiona   |  60000.00 | Mid-Level
+(6 rows)
+
+
+postgres=# WITH department_averages AS (
+postgres(#   SELECT
+postgres(#     department,
+postgres(#     AVG(salary) AS avg_salary
+postgres(#   FROM employees
+postgres(#   GROUP BY department
+postgres(# )
+postgres-#
+postgres-# SELECT
+postgres-#   e.name,
+postgres-#   e.salary,
+postgres-#   e.department,
+postgres-#   da.avg_salary
+postgres-# FROM employees e
+postgres-# JOIN department_averages da ON e.department = da.department
+postgres-# WHERE e.salary > da.avg_salary;
+ name  |  salary   | department  |     avg_salary
+-------+-----------+-------------+---------------------
+ Alice | 120000.00 | Engineering | 100000.000000000000
+ Diana |  72000.00 | Sales       |  68500.000000000000
+(2 rows)
