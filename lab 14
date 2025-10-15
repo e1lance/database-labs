@@ -1,0 +1,391 @@
+Microsoft Windows [Version 10.0.19045.6456]
+(c) Microsoft Corporation. All rights reserved.
+
+C:\Users\eilance>psql -U postgres -h localhost -p 5432 -d postgres
+Password for user postgres:
+psql (17.6)
+WARNING: Console code page (437) differs from Windows code page (1252)
+         8-bit characters might not work correctly. See psql reference
+         page "Notes for Windows users" for details.
+Type "help" for help.
+
+postgres=# DROP TABLE IF EXISTS user_preferences, users, audit_log, logs,
+postgres-#     order_items, orders, inventory, products, accounts, customers CASCADE;
+ERROR:  character with byte sequence 0xd0 0x97 in encoding "UTF8" has no equivalent in encoding "WIN1252"
+postgres=# \dt
+            List of relations
+ Schema |    Name     | Type  |  Owner
+--------+-------------+-------+----------
+ public | employees   | table | postgres
+ public | orders      | table | postgres
+ public | sales       | table | postgres
+ public | warehouse_1 | table | postgres
+ public | warehouse_2 | table | postgres
+(5 rows)
+
+
+postgres=# DROP TABLE warehouse_2;
+DROP TABLE
+postgres=# DROP TABLE warehouse_1;
+DROP TABLE
+postgres=# DROP TABLE sales;
+DROP TABLE
+postgres=# DROP TABLE orderes;
+ERROR:  character with byte sequence 0xd0 0x9e in encoding "UTF8" has no equivalent in encoding "WIN1252"
+postgres=# DROP TABLE orders;
+DROP TABLE
+postgres=# DROP TABLE employees;
+DROP TABLE
+postgres=# CREATE TABLE accounts (
+postgres(#     account_id SERIAL PRIMARY KEY,
+postgres(#     owner_name VARCHAR(100) NOT NULL,
+postgres(#     balance DECIMAL(12,2) DEFAULT 0 CHECK (balance >= 0)
+postgres(# );
+CREATE TABLE
+postgres=# INSERT INTO accounts (owner_name, balance) VALUES
+postgres-# ('Alice', 1000.00),
+postgres-# ('Bob', 500.00),
+postgres-# ('Charlie', 2500.00);
+INSERT 0 3
+postgres=# CREATE TABLE customers (
+postgres(#     customer_id SERIAL PRIMARY KEY,
+postgres(#     name VARCHAR(100) NOT NULL,
+postgres(#     email VARCHAR(100) UNIQUE NOT NULL
+postgres(# );
+CREATE TABLE
+postgres=# INSERT INTO customers (name, email) VALUES
+postgres-# ('John Doe', 'john@email.com'),
+postgres-# ('Alice Smith', 'alice@email.com'),
+postgres-# ('Bob Brown', 'bob@email.com');
+INSERT 0 3
+postgres=# CREATE TABLE orders (
+postgres(#     order_id SERIAL PRIMARY KEY,
+postgres(#     customer_id INT REFERENCES customers(customer_id) ON DELETE CASCADE,
+postgres(#     total DECIMAL(12,2) NOT NULL CHECK (total >= 0),
+postgres(#     created_at TIMESTAMP DEFAULT NOW()
+postgres(# );
+CREATE TABLE
+postgres=# CREATE TABLE order_items (
+postgres(#     order_item_id SERIAL PRIMARY KEY,
+postgres(#     order_id INT REFERENCES orders(order_id) ON DELETE CASCADE,
+postgres(#     product_id INT,
+postgres(#     quantity INT CHECK (quantity > 0)
+postgres(# );
+CREATE TABLE
+postgres=# CREATE TABLE inventory (
+postgres(#     product_id SERIAL PRIMARY KEY,
+postgres(#     stock INT DEFAULT 0 CHECK (stock >= 0)
+postgres(# );
+CREATE TABLE
+postgres=# INSERT INTO inventory (stock) VALUES (100), (200), (50);
+INSERT 0 3
+postgres=# CREATE TABLE products (
+postgres(#     product_id SERIAL PRIMARY KEY,
+postgres(#     name VARCHAR(100) NOT NULL,
+postgres(#     price DECIMAL(10,2) NOT NULL CHECK (price >= 0)
+postgres(# );
+CREATE TABLE
+postgres=# INSERT INTO products (name, price) VALUES
+postgres-# ('Laptop', 999.99),
+postgres-# ('Mouse', 25.99),
+postgres-# ('Keyboard', 79.99);
+INSERT 0 3
+postgres=#
+postgres=# CREATE TABLE logs (
+postgres(#     log_id SERIAL PRIMARY KEY,
+postgres(#     message TEXT NOT NULL,
+postgres(#     created_at TIMESTAMP DEFAULT NOW()
+postgres(# );
+CREATE TABLE
+postgres=# CREATE TABLE users (
+postgres(#     user_id SERIAL PRIMARY KEY,
+postgres(#     name VARCHAR(100) NOT NULL,
+postgres(#     email VARCHAR(100) UNIQUE NOT NULL
+postgres(# );
+CREATE TABLE
+postgres=# CREATE TABLE audit_log (
+postgres(#     log_id SERIAL PRIMARY KEY,
+postgres(#     action VARCHAR(100),
+postgres(#     timestamp TIMESTAMP DEFAULT NOW()
+postgres(# );
+CREATE TABLE
+postgres=# CREATE TABLE user_preferences (
+postgres(#     preference_id SERIAL PRIMARY KEY,
+postgres(#     user_id INT REFERENCES users(user_id) ON DELETE CASCADE,
+postgres(#     theme VARCHAR(50) DEFAULT 'light'
+postgres(# );
+CREATE TABLE
+postgres=# BEGIN;
+BEGIN
+postgres=*# UPDATE accounts SET balance = balance - 100 WHERE account_id = 1;
+UPDATE 1
+postgres=*# UPDATE accounts SET balance = balance + 100 WHERE account_id = 2;
+UPDATE 1
+postgres=*# COMMIT;
+COMMIT
+postgres=# BEGIN;
+BEGIN
+postgres=*# UPDATE accounts SET balance = balance - 100 WHERE account_id = 1;
+UPDATE 1
+postgres=*# UPDATE accounts SET balance = balance + 100 WHERE account_id = 2;
+UPDATE 1
+postgres=*# ROLLBACK;
+ROLLBACK
+postgres=# BEGIN;
+BEGIN
+postgres=*# SELECT balance FROM accounts WHERE account_id = 1;
+ balance
+---------
+  900.00
+(1 row)
+
+
+postgres=*# UPDATE accounts SET balance = balance - 500 WHERE account_id = 1;
+UPDATE 1
+postgres=*# UPDATE accounts SET balance = balance + 500 WHERE account_id = 2;
+UPDATE 1
+postgres=*# COMMIT;
+COMMIT
+postgres=# BEGIN;
+BEGIN
+postgres=*# INSERT INTO orders (customer_id, total) VALUES (1, 250.00);
+INSERT 0 1
+postgres=*# INSERT INTO order_items (order_id, product_id, quantity) VALUES (1, 101, 2);
+INSERT 0 1
+postgres=*# UPDATE inventory SET stock = stock - 2 WHERE product_id = 101;
+UPDATE 0
+postgres=*# COMMIT
+postgres-*# ;
+COMMIT
+postgres=# BEGIN;
+BEGIN
+postgres=*# INSERT INTO customers (name, email) VALUES ('John Doe', 'john@email.com');
+ERROR:  character with byte sequence 0xd0 0x9e in encoding "UTF8" has no equivalent in encoding "WIN1252"
+postgres=!#
+postgres=!# INSERT INTO orders (customer_id, total) VALUES (LASTVAL(), 100.00);
+ERROR:  character with byte sequence 0xd0 0x9e in encoding "UTF8" has no equivalent in encoding "WIN1252"
+postgres=!# COMMIT;
+ROLLBACK
+postgres=# BEGIN TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;
+BEGIN
+postgres=*# SELECT * FROM accounts;
+ account_id | owner_name | balance
+------------+------------+---------
+          3 | Charlie    | 2500.00
+          1 | Alice      |  400.00
+          2 | Bob        | 1100.00
+(3 rows)
+
+
+postgres=*# COMMIT;
+COMMIT
+postgres=# BEGIN TRANSACTION ISOLATION LEVEL READ COMMITTED;
+BEGIN
+postgres=*# SELECT * FROM accounts WHERE balance > 1000;
+ account_id | owner_name | balance
+------------+------------+---------
+          3 | Charlie    | 2500.00
+          2 | Bob        | 1100.00
+(2 rows)
+
+
+postgres=*# SELECT * FROM accounts WHERE balance > 1000;
+ account_id | owner_name | balance
+------------+------------+---------
+          3 | Charlie    | 2500.00
+          2 | Bob        | 1100.00
+(2 rows)
+
+
+postgres=*# COMMIT;
+COMMIT
+postgres=# BEGIN TRANSACTION ISOLATION LEVEL REPEATABLE READ;
+BEGIN
+postgres=*# SELECT * FROM accounts WHERE balance > 1000;
+ account_id | owner_name | balance
+------------+------------+---------
+          3 | Charlie    | 2500.00
+          2 | Bob        | 1100.00
+(2 rows)
+
+
+postgres=*# SELECT * FROM accounts WHERE balance > 1000;
+ account_id | owner_name | balance
+------------+------------+---------
+          3 | Charlie    | 2500.00
+          2 | Bob        | 1100.00
+(2 rows)
+
+
+postgres=*# COMMIT;
+COMMIT
+postgres=# BEGIN TRANSACTION ISOLATION LEVEL SERIALIZABLE;
+BEGIN
+postgres=*# SELECT * FROM accounts;
+ account_id | owner_name | balance
+------------+------------+---------
+          3 | Charlie    | 2500.00
+          1 | Alice      |  400.00
+          2 | Bob        | 1100.00
+(3 rows)
+
+
+postgres=*# UPDATE accounts SET balance = balance * 1.05;
+UPDATE 3
+postgres=*# COMMIT;
+COMMIT
+postgres=# SET TRANSACTION ISOLATION LEVEL REPEATABLE READ;
+ERROR:  character with byte sequence 0xd0 0x9f in encoding "UTF8" has no equivalent in encoding "WIN1252"
+postgres=# BEGIN;
+BEGIN
+postgres=*# INSERT INTO customers (name, email) VALUES ('Alice', 'alice@email.com');
+ERROR:  character with byte sequence 0xd0 0x9e in encoding "UTF8" has no equivalent in encoding "WIN1252"
+postgres=!# SAVEPOINT after_customer_insert;
+ERROR:  character with byte sequence 0xd0 0x9e in encoding "UTF8" has no equivalent in encoding "WIN1252"
+postgres=!#
+postgres=!#
+postgres=!# ;
+postgres=!# INSERT INTO orders (customer_id, total) VALUES (1, 500.00);
+ERROR:  character with byte sequence 0xd0 0x9e in encoding "UTF8" has no equivalent in encoding "WIN1252"
+postgres=!# ROLLBACK TO SAVEPOINT after_customer_insert;
+ERROR:  character with byte sequence 0xd0 0x9e in encoding "UTF8" has no equivalent in encoding "WIN1252"
+postgres=!# INSERT INTO orders (customer_id, total) VALUES (1, 300.00);
+ERROR:  character with byte sequence 0xd0 0x9e in encoding "UTF8" has no equivalent in encoding "WIN1252"
+postgres=!# COMMIT;
+ROLLBACK
+postgres=# BEGIN;
+BEGIN
+postgres=*# INSERT INTO products (name, price) VALUES ('Laptop', 999.99);
+INSERT 0 1
+postgres=*# SAVEPOINT sp1;
+SAVEPOINT
+postgres=*# INSERT INTO products (name, price) VALUES ('Mouse', 25.99);
+INSERT 0 1
+postgres=*# SAVEPOINT sp2;
+SAVEPOINT
+postgres=*# INSERT INTO products (name, price) VALUES ('Invalid Product', -50.00);
+ERROR:  character with byte sequence 0xd0 0x9e in encoding "UTF8" has no equivalent in encoding "WIN1252"
+postgres=!# ROLLBACK TO SAVEPOINT sp2;
+ROLLBACK
+postgres=*# INSERT INTO products (name, price) VALUES ('Keyboard', 79.99);
+INSERT 0 1
+postgres=*# COMMIT;
+COMMIT
+postgres=# BEGIN;
+BEGIN
+postgres=*# INSERT INTO logs (message) VALUES ('Starting process');
+INSERT 0 1
+postgres=*# SAVEPOINT process_start;
+SAVEPOINT
+postgres=*# INSERT INTO logs (message) VALUES ('Process completed');
+INSERT 0 1
+postgres=*#
+postgres=*# RELEASE SAVEPOINT process_start;
+RELEASE
+postgres=*#
+postgres=*# COMMIT;
+COMMIT
+postgres=# \DT
+invalid command \DT
+Try \? for help.
+postgres=# \dt
+              List of relations
+ Schema |       Name       | Type  |  Owner
+--------+------------------+-------+----------
+ public | accounts         | table | postgres
+ public | audit_log        | table | postgres
+ public | customers        | table | postgres
+ public | inventory        | table | postgres
+ public | logs             | table | postgres
+ public | order_items      | table | postgres
+ public | orders           | table | postgres
+ public | products         | table | postgres
+ public | user_preferences | table | postgres
+ public | users            | table | postgres
+(10 rows)
+
+
+postgres=# COMMIT;BEGIN;
+ERROR:  character with byte sequence 0xd0 0x9f in encoding "UTF8" has no equivalent in encoding "WIN1252"
+BEGIN
+postgres=*# BEGIN;
+ERROR:  character with byte sequence 0xd0 0x9f in encoding "UTF8" has no equivalent in encoding "WIN1252"
+postgres=!# ROLLBACK;
+ROLLBACK
+postgres=# BEGIN;
+BEGIN
+postgres=*# UPDATE inventory SET stock = stock - 1 WHERE product_id = 101;
+UPDATE 0
+postgres=*# INSERT INTO order_items (order_id, product_id, quantity) VALUES (1, 101, 1);
+INSERT 0 1
+postgres=*# COMMIT;
+COMMIT
+postgres=# BEGIN;
+BEGIN
+postgres=*# DO $$
+postgres$*# DECLARE
+postgres$*#  insufficient_funds EXCEPTION;
+postgres$*#  current_balance DECIMAL;
+postgres$*# BEGIN
+postgres$*#  SELECT balance INTO current_balance FROM accounts WHERE account_id = 1;
+postgres$*#
+postgres$*# IF current_balance < 100 THEN
+postgres$*#         RAISE insufficient_funds;
+postgres$*#     END IF;
+postgres$*#
+postgres$*#     UPDATE accounts SET balance = balance - 100 WHERE account_id = 1;
+postgres$*#     UPDATE accounts SET balance = balance + 100 WHERE account_id = 2;
+postgres$*#
+postgres$*# EXCEPTION
+postgres$*#     WHEN insufficient_funds THEN
+postgres$*#         RAISE NOTICE 'Transaction failed: Insufficient funds';
+postgres$*#         ROLLBACK;
+postgres$*# END $$;
+ERROR:  character with byte sequence 0xd0 0x9e in encoding "UTF8" has no equivalent in encoding "WIN1252"
+postgres=!# BEGIN TRANSACTION ISOLATION LEVEL SERIALIZABLE;
+ERROR:  character with byte sequence 0xd0 0x9e in encoding "UTF8" has no equivalent in encoding "WIN1252"
+postgres=!# ROLLBACK;
+ROLLBACK
+postgres=# BEGIN;
+BEGIN
+postgres=*#
+postgres=*# INSERT INTO orders (customer_id, total) VALUES (1, 1000.00);
+INSERT 0 1
+postgres=*# SAVEPOINT before_items;
+SAVEPOINT
+postgres=*# INSERT INTO order_items (order_id, product_id, quantity)
+postgres-*# VALUES (currval('orders_id_seq'), 101, 2);
+ERROR:  character with byte sequence 0xd0 0x9e in encoding "UTF8" has no equivalent in encoding "WIN1252"
+postgres=!# ROLLBACK TO SAVEPOINT before_items;
+ROLLBACK
+postgres=*# INSERT INTO order_items (order_id, product_id, quantity)
+postgres-*# VALUES (currval('orders_id_seq'), 102, 1);
+ERROR:  character with byte sequence 0xd0 0x9e in encoding "UTF8" has no equivalent in encoding "WIN1252"
+postgres=!# ROLLBACK;
+ROLLBACK
+postgres=# SELECT
+postgres-#     blocked_locks.pid AS blocked_pid,
+postgres-#     blocked_activity.usename AS blocked_user,
+postgres-#     blocking_locks.pid AS blocking_pid,
+postgres-#     blocking_activity.usename AS blocking_user,
+postgres-#     blocked_activity.query AS blocked_statement
+postgres-# FROM pg_catalog.pg_locks blocked_locks
+postgres-# JOIN pg_catalog.pg_stat_activity blocked_activity
+postgres-#     ON blocked_activity.pid = blocked_locks.pid
+postgres-# JOIN pg_catalog.pg_locks blocking_locks
+postgres-# ON blocking_locks.locktype = blocked_locks.locktype
+postgres-# WHERE NOT blocked_locks.granted;
+ERROR:  character with byte sequence 0xd0 0x9e in encoding "UTF8" has no equivalent in encoding "WIN1252"
+postgres=#
+postgres=#
+postgres=# BEGIN;
+BEGIN
+postgres=*# INSERT INTO audit_log (action, timestamp) VALUES ('user_creation', NOW());
+INSERT 0 1
+postgres=*# INSERT INTO users (name, email) VALUES ('John Doe', 'john@example.com');
+INSERT 0 1
+postgres=*# INSERT INTO user_preferences (user_id, theme) VALUES (currval('users_id_seq'), 'dark');
+ERROR:  character with byte sequence 0xd0 0x9e in encoding "UTF8" has no equivalent in encoding "WIN1252"
+postgres=!# COMMIT;
+ROLLBACK
+postgres=#
