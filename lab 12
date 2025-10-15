@@ -1,0 +1,349 @@
+postgres=# \dt
+           List of relations
+ Schema |   Name    | Type  |  Owner
+--------+-----------+-------+----------
+ public | customers | table | postgres
+ public | orders    | table | postgres
+(2 rows)
+
+
+postgres=# CREATE TABLE customers (
+postgres(#     customer_id SERIAL PRIMARY KEY,
+postgres(#     name VARCHAR(100),
+postgres(#     email VARCHAR(100)
+postgres(# );
+ERROR:  character with byte sequence 0xd0 0x9e in encoding "UTF8" has no equivalent in encoding "WIN1252"
+postgres=# INSERT INTO customers (name, email) VALUES
+postgres-# ('Alice Brown', 'alice@example.com'),
+postgres-# ('Bob Smith', 'bob@example.com'),
+postgres-# ('Charlie White', 'charlie@example.com'),
+postgres-# ('Diana Stone', 'diana@example.com'),
+postgres-# ('Ethan Black', 'ethan@example.com');
+INSERT 0 5
+postgres=# INSERT INTO orders (customer_id, order_date, total_amount) VALUES
+postgres-# (1, '2024-01-15', 250.50),
+postgres-# (1, '2024-03-12', 120.00),
+postgres-# (2, '2024-04-10', 310.75),
+postgres-# (3, '2024-05-18', 150.00),
+postgres-# (5, '2024-07-22', 400.00);
+INSERT 0 5
+postgres=# CREATE TABLE products (
+postgres(#     product_id SERIAL PRIMARY KEY,
+postgres(#     product_name VARCHAR(100),
+postgres(#     price DECIMAL(8,2)
+postgres(# );
+CREATE TABLE
+postgres=# INSERT INTO products (product_name, price) VALUES
+postgres-# ('Laptop', 1000.00),
+postgres-# ('Phone', 700.00),
+postgres-# ('Headphones', 150.00),
+postgres-# ('Monitor', 300.00),
+postgres-# ('Keyboard', 80.00);
+INSERT 0 5
+postgres=# CREATE TABLE order_items (
+postgres(#     order_item_id SERIAL PRIMARY KEY,
+postgres(#     order_id INT REFERENCES orders(order_id),
+postgres(#     product_id INT REFERENCES products(product_id),
+postgres(#     quantity INT
+postgres(# );
+CREATE TABLE
+postgres=# INSERT INTO order_items (order_id, product_id, quantity) VALUES
+postgres-# (1, 1, 1),
+postgres-# (1, 3, 2),
+postgres-# (2, 2, 1),
+postgres-# (3, 5, 3),
+postgres-# (4, 4, 1),
+postgres-# (5, 1, 1),
+postgres-# (5, 2, 2);
+INSERT 0 7
+postgres=# CREATE TABLE employees (
+postgres(#     employee_id SERIAL PRIMARY KEY,
+postgres(#     name VARCHAR(100),
+postgres(#     manager_id INT REFERENCES employees(employee_id)
+postgres(# );
+CREATE TABLE
+postgres=# INSERT INTO employees (employee_id, name, manager_id) VALUES
+postgres-# (1, 'Alice Manager', NULL),
+postgres-# (2, 'Bob Assistant', 1),
+postgres-# (3, 'Charlie Developer', 1),
+postgres-# (4, 'Diana Intern', 2);
+INSERT 0 4
+postgres=#
+postgres=# CREATE TABLE users (
+postgres(#     user_id SERIAL PRIMARY KEY,
+postgres(#     username VARCHAR(50)
+postgres(# );
+CREATE TABLE
+postgres=# CREATE TABLE user_profiles (
+postgres(#     profile_id SERIAL PRIMARY KEY,
+postgres(#     user_id INT REFERENCES users(user_id),
+postgres(#     first_name VARCHAR(50),
+postgres(#     last_name VARCHAR(50),
+postgres(#     phone VARCHAR(20)
+postgres(# );
+CREATE TABLE
+postgres=# INSERT INTO users (username) VALUES
+postgres-# ('alice_user'), ('bob_user'), ('charlie_user');
+INSERT 0 3
+postgres=# INSERT INTO user_profiles (user_id, first_name, last_name, phone) VALUES
+postgres-# (1, 'Alice', 'Brown', '555-1234'),
+postgres-# (2, 'Bob', 'Smith', '555-5678');
+INSERT 0 2
+postgres=# CREATE TABLE authors (
+postgres(#     author_id SERIAL PRIMARY KEY,
+postgres(#     author_name VARCHAR(100)
+postgres(# );
+CREATE TABLE
+postgres=# CREATE TABLE books (
+postgres(#     book_id SERIAL PRIMARY KEY,
+postgres(#     author_id INT REFERENCES authors(author_id),
+postgres(#     title VARCHAR(100),
+postgres(#     publication_year INT
+postgres(# );
+CREATE TABLE
+postgres=# INSERT INTO authors (author_name) VALUES
+postgres-# ('George Orwell'),
+postgres-# ('Jane Austen'),
+postgres-# ('Mark Twain');
+INSERT 0 3
+postgres=# INSERT INTO books (author_id, title, publication_year) VALUES
+postgres-# (1, '1984', 1949),
+postgres-# (1, 'Animal Farm', 1945),
+postgres-# (2, 'Pride and Prejudice', 1813),
+postgres-# (3, 'Adventures of Huckleberry Finn', 1884),
+postgres-# (3, 'The Adventures of Tom Sawyer', 1876);
+INSERT 0 5
+postgres=# CREATE TABLE students (
+postgres(#     student_id SERIAL PRIMARY KEY,
+postgres(#     student_name VARCHAR(100)
+postgres(# );
+CREATE TABLE
+postgres=# CREATE TABLE courses (
+postgres(#     course_id SERIAL PRIMARY KEY,
+postgres(#     course_name VARCHAR(100)
+postgres(# );
+CREATE TABLE
+postgres=#
+postgres=# CREATE TABLE enrollments (
+postgres(#     enrollment_id SERIAL PRIMARY KEY,
+postgres(#     student_id INT REFERENCES students(student_id),
+postgres(#     course_id INT REFERENCES courses(course_id),
+postgres(#     enrollment_date DATE,
+postgres(#     grade DECIMAL(3,1)
+postgres(# );
+CREATE TABLE
+postgres=# INSERT INTO students (student_name) VALUES
+postgres-# ('Alice Brown'), ('Bob Smith'), ('Charlie White');
+INSERT 0 3
+postgres=#
+postgres=# INSERT INTO courses (course_name) VALUES
+postgres-# ('Database Systems'), ('Algorithms'), ('Web Development');
+INSERT 0 3
+postgres=# INSERT INTO enrollments (student_id, course_id, enrollment_date, grade) VALUES
+postgres-# (1, 1, '2024-02-15', 4.5),
+postgres-# (1, 2, '2024-03-10', 4.8),
+postgres-# (2, 1, '2024-02-20', NULL),
+postgres-# (3, 3, '2024-04-05', 4.2);
+INSERT 0 4
+postgres=# SELECT c.name, c.email, o.order_date, o.total_amount
+postgres-# FROM customers c
+postgres-# INNER JOIN orders o ON c.customer_id = o.customer_id;
+     name      |        email        | order_date | total_amount
+---------------+---------------------+------------+--------------
+ Alice Brown   | alice@example.com   | 2024-01-15 |       250.50
+ Alice Brown   | alice@example.com   | 2024-03-12 |       120.00
+ Bob Smith     | bob@example.com     | 2024-04-10 |       310.75
+ Charlie White | charlie@example.com | 2024-05-18 |       150.00
+ Ethan Black   | ethan@example.com   | 2024-07-22 |       400.00
+(5 rows)
+
+
+postgres=# SELECT c.name, c.email, o.order_date, o.total_amount
+postgres-# FROM customers c
+postgres-# LEFT JOIN orders o ON c.customer_id = o.customer_id;
+     name      |        email        | order_date | total_amount
+---------------+---------------------+------------+--------------
+ Alice Brown   | alice@example.com   | 2024-01-15 |       250.50
+ Alice Brown   | alice@example.com   | 2024-03-12 |       120.00
+ Bob Smith     | bob@example.com     | 2024-04-10 |       310.75
+ Charlie White | charlie@example.com | 2024-05-18 |       150.00
+ Ethan Black   | ethan@example.com   | 2024-07-22 |       400.00
+ Diana Stone   | diana@example.com   |            |
+(6 rows)
+
+
+postgres=# SELECT c.name, c.email, o.order_date, o.total_amount
+postgres-# FROM customers c
+postgres-# RIGHT JOIN orders o ON c.customer_id = o.customer_id;
+     name      |        email        | order_date | total_amount
+---------------+---------------------+------------+--------------
+ Alice Brown   | alice@example.com   | 2024-01-15 |       250.50
+ Alice Brown   | alice@example.com   | 2024-03-12 |       120.00
+ Bob Smith     | bob@example.com     | 2024-04-10 |       310.75
+ Charlie White | charlie@example.com | 2024-05-18 |       150.00
+ Ethan Black   | ethan@example.com   | 2024-07-22 |       400.00
+(5 rows)
+
+
+postgres=# SELECT c.name, c.email, o.order_date, o.total_amount
+postgres-# FROM customers c
+postgres-# FULL OUTER JOIN orders o ON c.customer_id = o.customer_id;
+     name      |        email        | order_date | total_amount
+---------------+---------------------+------------+--------------
+ Alice Brown   | alice@example.com   | 2024-01-15 |       250.50
+ Alice Brown   | alice@example.com   | 2024-03-12 |       120.00
+ Bob Smith     | bob@example.com     | 2024-04-10 |       310.75
+ Charlie White | charlie@example.com | 2024-05-18 |       150.00
+ Ethan Black   | ethan@example.com   | 2024-07-22 |       400.00
+ Diana Stone   | diana@example.com   |            |
+(6 rows)
+
+
+postgres=# SELECT c.name, p.product_name
+postgres-# FROM customers c
+postgres-# CROSS JOIN products p;
+     name      | product_name
+---------------+--------------
+ Alice Brown   | Laptop
+ Bob Smith     | Laptop
+ Charlie White | Laptop
+ Diana Stone   | Laptop
+ Ethan Black   | Laptop
+ Alice Brown   | Phone
+ Bob Smith     | Phone
+ Charlie White | Phone
+ Diana Stone   | Phone
+ Ethan Black   | Phone
+ Alice Brown   | Headphones
+ Bob Smith     | Headphones
+ Charlie White | Headphones
+ Diana Stone   | Headphones
+ Ethan Black   | Headphones
+ Alice Brown   | Monitor
+ Bob Smith     | Monitor
+ Charlie White | Monitor
+ Diana Stone   | Monitor
+ Ethan Black   | Monitor
+ Alice Brown   | Keyboard
+ Bob Smith     | Keyboard
+ Charlie White | Keyboard
+ Diana Stone   | Keyboard
+ Ethan Black   | Keyboard
+(25 rows)
+
+
+postgres=# SELECT c.name, o.order_date, oi.quantity, p.product_name, p.price
+postgres-# FROM customers c
+postgres-# INNER JOIN orders o ON c.customer_id = o.customer_id
+postgres-# INNER JOIN order_items oi ON o.order_id = oi.order_id
+postgres-# INNER JOIN products p ON oi.product_id = p.product_id;
+     name      | order_date | quantity | product_name |  price
+---------------+------------+----------+--------------+---------
+ Alice Brown   | 2024-01-15 |        1 | Laptop       | 1000.00
+ Alice Brown   | 2024-01-15 |        2 | Headphones   |  150.00
+ Alice Brown   | 2024-03-12 |        1 | Phone        |  700.00
+ Bob Smith     | 2024-04-10 |        3 | Keyboard     |   80.00
+ Charlie White | 2024-05-18 |        1 | Monitor      |  300.00
+ Ethan Black   | 2024-07-22 |        1 | Laptop       | 1000.00
+ Ethan Black   | 2024-07-22 |        2 | Phone        |  700.00
+(7 rows)
+
+
+postgres=# SELECT c.name, o.order_date, o.total_amount
+postgres-# FROM customers c
+postgres-# INNER JOIN orders o ON c.customer_id = o.customer_id
+postgres-# WHERE o.order_date >= '2024-01-01'
+postgres-# AND o.total_amount > 100;
+     name      | order_date | total_amount
+---------------+------------+--------------
+ Alice Brown   | 2024-01-15 |       250.50
+ Alice Brown   | 2024-03-12 |       120.00
+ Bob Smith     | 2024-04-10 |       310.75
+ Charlie White | 2024-05-18 |       150.00
+ Ethan Black   | 2024-07-22 |       400.00
+(5 rows)
+
+
+postgres=# SELECT u.username, up.first_name, up.last_name, up.phone
+postgres-# FROM users u
+postgres-# LEFT JOIN user_profiles up ON u.user_id = up.user_id;
+   username   | first_name | last_name |  phone
+--------------+------------+-----------+----------
+ alice_user   | Alice      | Brown     | 555-1234
+ bob_user     | Bob        | Smith     | 555-5678
+ charlie_user |            |           |
+(3 rows)
+
+
+postgres=# SELECT a.author_name, b.title, b.publication_year
+postgres-# FROM authors a
+postgres-# INNER JOIN books b ON a.author_id = b.author_id
+postgres-# ORDER BY a.author_name, b.publication_year;
+  author_name  |             title              | publication_year
+---------------+--------------------------------+------------------
+ George Orwell | Animal Farm                    |             1945
+ George Orwell | 1984                           |             1949
+ Jane Austen   | Pride and Prejudice            |             1813
+ Mark Twain    | The Adventures of Tom Sawyer   |             1876
+ Mark Twain    | Adventures of Huckleberry Finn |             1884
+(5 rows)
+
+
+postgres=# SELECT s.student_name, c.course_name, e.enrollment_date, e.grade
+postgres-# FROM students s
+postgres-# INNER JOIN enrollments e ON s.student_id = e.student_id
+postgres-# INNER JOIN courses c ON e.course_id = c.course_id
+postgres-# WHERE e.grade IS NOT NULL
+postgres-# ORDER BY s.student_name, c.course_name;
+ student_name  |   course_name    | enrollment_date | grade
+---------------+------------------+-----------------+-------
+ Alice Brown   | Algorithms       | 2024-03-10      |   4.8
+ Alice Brown   | Database Systems | 2024-02-15      |   4.5
+ Charlie White | Web Development  | 2024-04-05      |   4.2
+(3 rows)
+
+
+postgres=# CREATE INDEX idx_orders_customer_id ON orders(customer_id);
+CREATE INDEX
+postgres=# CREATE INDEX idx_order_items_order_id ON order_items(order_id);
+CREATE INDEX
+postgres=#
+postgres=# CREATE INDEX idx_order_items_product_id ON order_items(product_id);
+CREATE INDEX
+postgres=# SELECT c.name, o.order_date
+postgres-# FROM customers c
+postgres-# INNER JOIN orders o ON c.customer_id = o.customer_id;
+     name      | order_date
+---------------+------------
+ Alice Brown   | 2024-03-12
+ Alice Brown   | 2024-01-15
+ Bob Smith     | 2024-04-10
+ Charlie White | 2024-05-18
+ Ethan Black   | 2024-07-22
+(5 rows)
+
+
+postgres=# SELECT c.name, o.order_date
+postgres-# FROM customers c
+postgres-# INNER JOIN orders o ON c.customer_id = o.customer_id;
+     name      | order_date
+---------------+------------
+ Alice Brown   | 2024-03-12
+ Alice Brown   | 2024-01-15
+ Bob Smith     | 2024-04-10
+ Charlie White | 2024-05-18
+ Ethan Black   | 2024-07-22
+(5 rows)
+
+
+postgres=# SELECT c.name
+postgres-# FROM customers c
+postgres-# LEFT JOIN orders o ON c.customer_id = o.customer_id
+postgres-# WHERE o.customer_id IS NULL;
+    name
+-------------
+ Diana Stone
+(1 row)
+
+
+postgres=#
