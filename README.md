@@ -31,7 +31,7 @@
 
 ## ER Diagram
 
-<img width="1745" height="1280" alt="diagram" src="https://github.com/user-attachments/assets/efca395c-c837-41a5-8bf5-b7991b2f1018" />
+<img width="1745" height="1280" alt="diagram" src="https://github.com/user-attachments/assets/5087e987-7d92-4a06-bdc5-3725b0de4911" />
 
 ## ⚙️ Installation & Setup
 
