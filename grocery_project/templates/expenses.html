@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block content %}
+<h3>💸 Регистрация расходов</h3>
+<div class="row">
+    <div class="col-md-4">
+        <form method="POST" class="card p-3 shadow-sm border-0">
+            <label>Магазин</label>
+            <select name="store_id" class="form-select mb-2">
+                {% for s in stores %}<option value="{{ s.store_id }}">{{ s.store_name }}</option>{% endfor %}
+            </select>
+            <label>Тип расхода</label>
+            <select name="expense_type" class="form-select mb-2">
+                <option value="Аренда">Аренда</option>
+                <option value="Зарплаты">Зарплаты</option>
+                <option value="Маркетинг">Маркетинг</option>
+            </select>
+            <label>Сумма</label>
+            <input type="number" name="amount" class="form-control mb-3" required>
+            <button class="btn btn-danger w-100">Сохранить расход</button>
+        </form>
+    </div>
+    <div class="col-md-8">
+        <table class="table card p-3 shadow-sm border-0">
+            <thead><tr><th>Дата</th><th>Магазин</th><th>Тип</th><th>Сумма</th></tr></thead>
+            <tbody>
+                {% for e in expenses %}
+                <tr><td>{{ e.expense_date }}</td><td>{{ e.store_name }}</td><td>{{ e.expense_type }}</td><td>{{ e.amount }} сом</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

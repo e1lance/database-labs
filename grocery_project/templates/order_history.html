@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block content %}
+<h3>📜 История всех продаж</h3>
+<table class="table table-hover bg-white shadow-sm">
+    <thead class="table-dark">
+        <tr>
+            <th>ID</th>
+            <th>Дата и время</th>
+            <th>Магазин</th>
+            <th>Продавец</th>
+            <th>Сумма</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for o in orders %}
+        <tr>
+            <td>#{{ o.order_id }}</td>
+            <td>{{ o.order_timestamp.strftime('%d.%m.%Y %H:%M') }}</td>
+            <td>{{ o.store_name }}</td>
+            <td>{{ o.seller or 'Аноним' }}</td>
+            <td class="fw-bold">{{ o.total_amount_net }} сом</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

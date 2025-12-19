@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold"><i class="fa fa-briefcase text-primary me-2"></i>Финансовый отчет</h2>
+        <div class="text-muted">Данные на: {{ now }}</div>
+    </div>
+
+    <div class="row">
+        {% for row in stats %}
+        {# Считаем прибыль #}
+        {% set profit = row.total_revenue - row.total_cost - row.other_expenses %}
+
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card shadow-sm border-0 {% if profit < 0 %}border-start border-danger border-4{% else %}border-start border-success border-4{% endif %}">
+                <div class="card-body">
+                    <h5 class="card-title fw-bold text-dark mb-3">{{ row.store_name }}</h5>
+
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-secondary small text-uppercase">Выручка</span>
+                        <span class="fw-bold">{{ "{:,.2f}".format(row.total_revenue) }} сом</span>
+                    </div>
+
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-secondary small text-uppercase">Закупка товара</span>
+                        <span class="text-muted">- {{ "{:,.2f}".format(row.total_cost) }} сом</span>
+                    </div>
+
+                    <div class="d-flex justify-content-between mb-3">
+                        <span class="text-secondary small text-uppercase">Прочие расходы</span>
+                        <span class="text-danger">- {{ "{:,.2f}".format(row.other_expenses) }} сом</span>
+                    </div>
+
+                    <div class="p-3 rounded {% if profit < 0 %}bg-danger bg-opacity-10{% else %}bg-success bg-opacity-10{% endif %}">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="small fw-bold">Итоговая прибыль:</span>
+                            <span class="h4 mb-0 fw-bold {% if profit < 0 %}text-danger{% else %}text-success{% endif %}">
+                                {{ "{:,.2f}".format(profit) }} сом
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    {% if not stats %}
+    <div class="text-center py-5">
+        <i class="fa fa-folder-open fa-3x text-light mb-3"></i>
+        <p class="text-muted">Данных пока нет. Оформите первый заказ!</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

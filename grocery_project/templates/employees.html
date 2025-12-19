@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="fa fa-user-group text-info"></i> Управление персоналом</h2>
+</div>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0">Нанять сотрудника</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="mb-3">
+                        <label class="form-label">ФИО сотрудника</label>
+                        <input type="text" name="name" class="form-control" placeholder="Напр: Азамат Алиев" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Должность</label>
+                        <select name="pos_id" class="form-select" required>
+                            {% for pos in positions %}
+                            <option value="{{ pos.position_id }}">{{ pos.title }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Магазин (Филиал)</label>
+                        <select name="store_id" class="form-select" required>
+                            {% for s in stores %}
+                            <option value="{{ s.store_id }}">{{ s.store_name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Оклад (сом)</label>
+                        <input type="number" name="salary" class="form-control" required>
+                    </div>
+
+                    <button type="submit" class="btn btn-info w-100 text-white">
+                        <i class="fa fa-user-plus"></i> Добавить в штат
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-8">
+        <div class="card shadow-sm border-0">
+            <div class="card-body p-0">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Сотрудник</th>
+                            <th>Должность</th>
+                            <th>Магазин</th>
+                            <th>Зарплата</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for e in employees %}
+                        <tr>
+                            <td>
+                                <div class="fw-bold">{{ e.full_name }}</div>
+                                <small class="text-muted">Дата найма: {{ e.hire_date }}</small>
+                            </td>
+                            <td><span class="badge bg-light text-dark border">{{ e.title }}</span></td>
+                            <td>{{ e.store_name }}</td>
+                            <td class="fw-bold">{{ e.salary }} сом</td>
+                        </tr>
+                        {% endfor %}
+                        {% if not employees %}
+                        <tr>
+                            <td colspan="4" class="text-center py-4 text-muted">В штате пока нет сотрудников</td>
+                        </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

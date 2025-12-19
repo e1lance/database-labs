@@ -1,0 +1,129 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="row mb-4">
+    <div class="col-12">
+        <h2 class="fw-bold"><i class="fa fa-clipboard-list me-2 text-primary"></i>Управление каталогом</h2>
+        <p class="text-muted small">Добавление товаров и управление категориями с учетом остатков</p>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-3">
+        <div class="card shadow-sm border-0 mb-4 bg-light">
+            <div class="card-header bg-dark text-white fw-bold border-0">
+                <i class="fa fa-folder-plus me-1"></i> Категория
+            </div>
+            <div class="card-body">
+                <form action="/admin/add_category" method="POST">
+                    <div class="mb-3">
+                        <input type="text" name="category_name" class="form-control" placeholder="Напр: Овощи" required>
+                    </div>
+                    <button class="btn btn-dark btn-sm w-100 fw-bold">Создать</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-9">
+        <div class="card shadow border-0 mb-4">
+            <div class="card-header bg-white border-bottom py-3">
+                <h5 class="mb-0 fw-bold"><i class="fa fa-plus text-success me-2"></i>Новый товар</h5>
+            </div>
+            <div class="card-body">
+                <form action="/admin" method="POST">
+
+                    <div class="row mb-3">
+                        <div class="col-md-8">
+                            <label class="form-label small fw-bold">Наименование товара</label>
+                            <input type="text" name="name" class="form-control" placeholder="Напр: Хлеб Бородинский" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold">Штрих</label>
+                            <input type="text" name="sku" class="form-control" placeholder="2659827597" required>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Категория</label>
+                            <select name="category_id" class="form-select" required>
+                                {% for c in categories %}
+                                <option value="{{ c.category_id }}">{{ c.category_name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label small fw-bold">Ед. измерения</label>
+                            <select name="unit_id" class="form-select" required>
+                                {% for u in units %}
+                                <option value="{{ u.unit_id }}">{{ u.short_name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold text-secondary">Себестоимость</label>
+                            <input type="number" step="0.01" name="purchase_price" class="form-control" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold text-success">Цена продажи</label>
+                            <input type="number" step="0.01" name="retail_price" class="form-control" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold text-primary">В наличии (остаток)</label>
+                            <input type="number" step="0.001" name="stock" class="form-control border-primary" placeholder="0" required>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-lg w-100 fw-bold">
+                        <i class="fa fa-save me-2"></i>Добавить в каталог
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow-sm border-0">
+    <div class="card-header bg-white py-3">
+        <h5 class="mb-0 fw-bold">Список товаров в базе</h5>
+    </div>
+    <div class="card-body p-0">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+            <tr>
+                <th class="ps-4">Артикул</th>
+                <th>Наименование</th>
+                <th>Категория</th>
+                <th>Закупка</th>
+                <th class="text-end pe-4">Цена продажи</th>
+                <th class="text-center">В наличии</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for p in products %}
+            <tr>
+                <td class="ps-4 text-muted"><code>{{ p.sku }}</code></td>
+                <td class="fw-bold text-dark">{{ p.product_name }}</td>
+                <td><span class="badge bg-light text-dark border">{{ p.category_name }}</span></td>
+                <td class="text-secondary">{{ p.purchase_price }} сом</td>
+                <td class="text-end pe-4 fw-bold text-primary">{{ p.retail_price }} сом</td>
+                <td class="text-center fw-bold {% if p.stock_quantity < 5 %}text-danger{% endif %}">
+                    {{ p.stock_quantity }}
+                </td>
+            </tr>
+            {% endfor %}
+            {% if not products %}
+            <tr>
+                <td colspan="6" class="text-center py-5 text-muted">Товаров пока нет. Создайте первый товар!</td>
+            </tr>
+            {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="row">
+    <div class="col-md-6">
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-header bg-dark text-white"><h5>🏢 Поставщики</h5></div>
+            <div class="card-body">
+                <form action="/admin/add_supplier" method="POST" class="d-flex gap-2 mb-3">
+                    <input type="text" name="name" class="form-control" placeholder="Название поставщика" required>
+                    <button class="btn btn-primary">Добавить</button>
+                </form>
+                <ul class="list-group">
+                    {% for s in suppliers %}<li class="list-group-item">{{ s.supplier_name }}</li>{% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-dark text-white"><h5>🏷️ Бренды</h5></div>
+            <div class="card-body">
+                <form action="/admin/add_brand" method="POST" class="d-flex gap-2 mb-3">
+                    <input type="text" name="name" class="form-control" placeholder="Название бренда" required>
+                    <button class="btn btn-primary">Добавить</button>
+                </form>
+                <ul class="list-group">
+                    {% for b in brands %}<li class="list-group-item">{{ b.brand_name }}</li>{% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

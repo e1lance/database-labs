@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grocery ERP | {{ session.get('store_name', 'Система управления') }}</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        body { background-color: #f8f9fa; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .navbar { shadow-sm: 0 2px 4px rgba(0,0,0,.08); }
+        .nav-link { font-weight: 500; transition: color 0.2s; }
+        .dropdown-menu { border: none; shadow: 0 10px 15px rgba(0,0,0,.1); }
+        .badge-cart { font-size: 0.7rem; }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4 shadow-sm">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="/">
+                <i class="fa fa-shopping-basket me-2"></i>GROCERY PRO
+            </a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/"><i class="fa fa-store me-1"></i>Витрина</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/dashboard"><i class="fa fa-chart-pie me-1"></i>Дашборд</a>
+                    </li>
+
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle text-white" href="#" id="adminDrop" data-bs-toggle="dropdown">
+                            <i class="fa fa-sliders me-1"></i>Управление
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/admin"><i class="fa fa-box me-2"></i>Товары</a></li>
+                            <li><a class="dropdown-item" href="/admin/orders"><i class="fa fa-receipt me-2"></i>История продаж</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="/admin/expenses"><i class="fa fa-wallet me-2"></i>Расходы</a></li>
+                            <li><a class="dropdown-item" href="/admin/writeoff"><i class="fa fa-trash-can me-2"></i>Списания</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="/admin/employees"><i class="fa fa-user-group me-2"></i>Персонал</a></li>
+                        </ul>
+                    </li>
+                </ul>
+
+                <div class="d-flex align-items-center">
+
+                    <div class="dropdown me-3">
+                        <button class="btn btn-light btn-sm dropdown-toggle fw-bold" type="button" data-bs-toggle="dropdown">
+                            <i class="fa fa-map-marker-alt text-danger me-1"></i>
+                            {{ session.get('store_name', 'Выбрать филиал') }}
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end shadow">
+                            <li><h6 class="dropdown-header">Переключить магазин:</h6></li>
+                            {% for s in all_stores %}
+                            <li>
+                                <a class="dropdown-item {% if session.store_id == s.store_id %}active{% endif %}"
+                                   href="{{ url_for('set_store', store_id=s.store_id) }}">
+                                    {{ s.store_name }}
+                                </a>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+
+                    <a href="/cart" class="btn btn-warning btn-sm position-relative fw-bold px-3">
+                        <i class="fa fa-shopping-cart"></i>
+                        {% if session.cart %}
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger badge-cart">
+                            {{ session.cart|length }}
+                        </span>
+                        {% endif %}
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container pb-5">
+        {% with messages = get_flashed_messages() %}
+          {% if messages %}
+            {% for message in messages %}
+              <div class="alert alert-info alert-dismissible fade show shadow-sm border-0 border-start border-4 border-info">
+                <i class="fa fa-info-circle me-2"></i>{{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+              </div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </div>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
